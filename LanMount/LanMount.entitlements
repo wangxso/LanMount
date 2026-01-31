@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- ============================================== -->
+	<!-- App Sandbox Configuration                      -->
+	<!-- ============================================== -->
+	
+	<!-- App Sandbox - Disabled for SMB mounting functionality -->
+	<!-- NetFS framework requires non-sandboxed access to mount volumes -->
+	<key>com.apple.security.app-sandbox</key>
+	<false/>
+	
+	<!-- ============================================== -->
+	<!-- Network Access Entitlements                    -->
+	<!-- ============================================== -->
+	
+	<!-- Network Client - Required for SMB connections and Bonjour scanning -->
+	<!-- Validates: Requirement 12.5 (Network Access) -->
+	<key>com.apple.security.network.client</key>
+	<true/>
+	
+	<!-- Network Server - Required for receiving Bonjour service announcements -->
+	<!-- Validates: Requirement 3.1 (Bonjour Scanner) -->
+	<key>com.apple.security.network.server</key>
+	<true/>
+	
+	<!-- ============================================== -->
+	<!-- File System Access Entitlements                -->
+	<!-- ============================================== -->
+	
+	<!-- User-Selected Files - Read/Write access to user-selected locations -->
+	<!-- Validates: Requirement 12.5 (File System Access) -->
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
+	
+	<!-- Downloads Folder - Read/Write access for default mount locations -->
+	<key>com.apple.security.files.downloads.read-write</key>
+	<true/>
+	
+	<!-- ============================================== -->
+	<!-- Keychain Access Entitlements                   -->
+	<!-- ============================================== -->
+	
+	<!-- Keychain Access Groups - For storing SMB credentials securely -->
+	<!-- Validates: Requirement 4.2, 4.3 (Keychain Storage) -->
+	<!-- Validates: Requirement 12.5 (Keychain Access) -->
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)com.lanmount.app</string>
+	</array>
+	
+	<!-- ============================================== -->
+	<!-- Automation Entitlements                        -->
+	<!-- ============================================== -->
+	
+	<!-- Apple Events - Required for Finder integration -->
+	<!-- Validates: Requirement 5.1, 5.2, 5.3 (Finder Integration) -->
+	<key>com.apple.security.automation.apple-events</key>
+	<true/>
+	
+	<!-- Scripting Targets - Specific apps we can send Apple Events to -->
+	<key>com.apple.security.scripting-targets</key>
+	<dict>
+		<!-- Finder - For opening mounted volumes and sidebar integration -->
+		<key>com.apple.finder</key>
+		<array>
+			<string>com.apple.finder.open</string>
+			<string>com.apple.finder.reveal</string>
+		</array>
+	</dict>
+	
+	<!-- ============================================== -->
+	<!-- Hardened Runtime Configuration                 -->
+	<!-- Required for notarization and distribution     -->
+	<!-- ============================================== -->
+	
+	<!-- Disable unsigned executable memory - Security best practice -->
+	<key>com.apple.security.cs.allow-unsigned-executable-memory</key>
+	<false/>
+	
+	<!-- Disable DYLD environment variables - Security best practice -->
+	<key>com.apple.security.cs.allow-dyld-environment-variables</key>
+	<false/>
+	
+	<!-- Disable library validation bypass - Security best practice -->
+	<key>com.apple.security.cs.disable-library-validation</key>
+	<false/>
+	
+	<!-- Disable executable heap - Security best practice -->
+	<key>com.apple.security.cs.disable-executable-page-protection</key>
+	<false/>
+	
+	<!-- Allow JIT compilation - Disabled for security -->
+	<key>com.apple.security.cs.allow-jit</key>
+	<false/>
+	
+	<!-- Debugger attachment - Disabled for release builds -->
+	<key>com.apple.security.cs.debugger</key>
+	<false/>
+</dict>
+</plist>

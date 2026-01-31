@@ -1,0 +1,568 @@
+/* 
+  Localizable.strings (Simplified Chinese)
+  LanMount
+
+  简体中文本地化 - LanMount SMB 挂载应用
+  需求: 20.1 - 国际化支持
+*/
+
+// MARK: - 通用
+
+"Error" = "错误";
+"Cancel" = "取消";
+"Save" = "保存";
+"OK" = "确定";
+"Delete" = "删除";
+"Close" = "关闭";
+
+// MARK: - MountConfigView (挂载配置视图)
+
+"Mount Configuration" = "挂载配置";
+"Server Information" = "服务器信息";
+"Server Address" = "服务器地址";
+"e.g., 192.168.1.100 or server.local" = "例如：192.168.1.100 或 server.local";
+"Share Name" = "共享名称";
+"e.g., Documents or Public" = "例如：Documents 或 Public";
+"Authentication" = "身份验证";
+"Credentials" = "凭证";
+"Username" = "用户名";
+"e.g., admin or DOMAIN\\user" = "例如：admin 或 DOMAIN\\user";
+"Leave empty for guest access" = "留空以使用访客访问";
+"Password" = "密码";
+"Enter password" = "输入密码";
+"Remember Credentials" = "记住凭证";
+"Store credentials securely in Keychain" = "将凭证安全存储在钥匙串中";
+"Options" = "选项";
+"Auto-Mount on Login" = "登录时自动挂载";
+"Automatically mount this share when you log in" = "登录时自动挂载此共享";
+"Enable Synchronization" = "启用同步";
+"Keep local and remote files in sync" = "保持本地和远程文件同步";
+"Test Connection" = "测试连接";
+"Connection test not available" = "连接测试不可用";
+"Connection successful" = "连接成功";
+"Server address is required" = "服务器地址为必填项";
+"Invalid server address format" = "服务器地址格式无效";
+"Share name is required" = "共享名称为必填项";
+"Invalid share name format" = "共享名称格式无效";
+
+// MARK: - NetworkScannerView (网络扫描视图)
+
+"Network Scanner" = "网络扫描";
+"Scanning..." = "扫描中...";
+"Scanning network for SMB services..." = "正在扫描网络中的 SMB 服务...";
+"This may take up to 30 seconds" = "这可能需要最多 30 秒";
+"No SMB Services Found" = "未找到 SMB 服务";
+"Make sure your SMB servers are online and on the same network." = "请确保您的 SMB 服务器在线且在同一网络中。";
+"Scan Again" = "重新扫描";
+"Discovered Services" = "已发现的服务";
+"found" = "个";
+"Refresh" = "刷新";
+"Select" = "选择";
+
+// MARK: - PreferencesView (偏好设置视图)
+
+"Preferences" = "偏好设置";
+"General" = "通用";
+"Launch at Login" = "登录时启动";
+"Automatically start LanMount when you log in" = "登录时自动启动 LanMount";
+"Requires approval in System Settings" = "需要在系统设置中批准";
+"Open Settings" = "打开设置";
+"Auto-Reconnect" = "自动重连";
+"Automatically reconnect when a mount is disconnected" = "挂载断开时自动重新连接";
+"Show Notifications" = "显示通知";
+"Display notifications for mount events and errors" = "显示挂载事件和错误的通知";
+"Network" = "网络";
+"Network Scan Interval" = "网络扫描间隔";
+"How often to scan for network changes when monitoring mounts" = "监控挂载时扫描网络变化的频率";
+"1 min" = "1 分钟";
+"5 min" = "5 分钟";
+"10 min" = "10 分钟";
+"15 min" = "15 分钟";
+"1 minute" = "1 分钟";
+"%d minutes" = "%d 分钟";
+"Logging" = "日志";
+"Log Level" = "日志级别";
+"Debug" = "调试";
+"Info" = "信息";
+"Warning" = "警告";
+"Detailed information for debugging. May impact performance." = "详细的调试信息。可能影响性能。";
+"General information about operations. Recommended for normal use." = "操作的一般信息。推荐日常使用。";
+"Warnings and potential issues. Less verbose." = "警告和潜在问题。较少输出。";
+"Only errors. Minimal logging." = "仅错误。最少日志。";
+"View Logs" = "查看日志";
+"Log files location:" = "日志文件位置：";
+"Total log size: %@" = "日志总大小：%@";
+"Reset to Defaults" = "恢复默认设置";
+"Failed to save settings: %@" = "保存设置失败：%@";
+
+// MARK: - MenuBarController (菜单栏控制器)
+
+"LanMount - Connected" = "LanMount - 已连接";
+"LanMount - Connecting" = "LanMount - 连接中";
+"LanMount - Error" = "LanMount - 错误";
+"No Mounted Volumes" = "无已挂载卷";
+"Mounted Volumes" = "已挂载卷";
+"Open in Finder" = "在访达中打开";
+"Unmount" = "卸载";
+"Mount Point: " = "挂载点：";
+"Status: " = "状态：";
+"Connected" = "已连接";
+"Disconnected" = "已断开";
+"Connecting..." = "连接中...";
+"Error: " = "错误：";
+"Add New Mount..." = "添加新挂载...";
+"Scan Network..." = "扫描网络...";
+"Preferences..." = "偏好设置...";
+"Quit LanMount" = "退出 LanMount";
+
+// MARK: - NotificationManager (通知管理器)
+
+"Mount Successful" = "挂载成功";
+"Mount Failed" = "挂载失败";
+"Volume Disconnected" = "卷已断开";
+"Sync Complete" = "同步完成";
+"Sync Conflict" = "同步冲突";
+"Connected to %@/%@" = "已连接到 %@/%@";
+"Failed to connect to %@/%@: %@" = "连接 %@/%@ 失败：%@";
+"Connection to %@ was lost" = "与 %@ 的连接已断开";
+"1 file synchronized for %@" = "已为 %@ 同步 1 个文件";
+"%d files synchronized for %@" = "已为 %@ 同步 %d 个文件";
+"Conflict detected for %@" = "检测到 %@ 的冲突";
+"Reconnect" = "重新连接";
+"View Details" = "查看详情";
+"Dismiss" = "忽略";
+
+// MARK: - SMBMounterError - 错误描述
+
+"Cannot connect to server '%@'. Please check your network connection and verify the server address." = "无法连接到服务器 '%@'。请检查您的网络连接并验证服务器地址。";
+"Authentication failed for '%@/%@'. Please check your username and password." = "'%@/%@' 身份验证失败。请检查您的用户名和密码。";
+"Mount point '%@' already exists. Please choose a different location or unmount the existing volume." = "挂载点 '%@' 已存在。请选择其他位置或卸载现有卷。";
+"Failed to create mount point at '%@'. Please check permissions." = "无法在 '%@' 创建挂载点。请检查权限。";
+"Permission denied for operation: %@. Please check your access rights." = "操作被拒绝：%@。请检查您的访问权限。";
+"Invalid SMB URL: '%@'. Please use the format smb://server/share." = "无效的 SMB URL：'%@'。请使用格式 smb://server/share。";
+"Mount operation failed: %@" = "挂载操作失败：%@";
+"Share '%@' not found on server '%@'. Please verify the share name." = "在服务器 '%2$@' 上未找到共享 '%1$@'。请验证共享名称。";
+"Connection to '%@' timed out. The server may be slow or unreachable." = "连接 '%@' 超时。服务器可能响应缓慢或无法访问。";
+"The volume at '%@' is not currently mounted." = "'%@' 处的卷当前未挂载。";
+"Failed to unmount '%@': %@" = "卸载 '%@' 失败：%@";
+"Access to the Keychain was denied. Please check your security settings." = "钥匙串访问被拒绝。请检查您的安全设置。";
+"Credentials for '%@' not found in Keychain." = "在钥匙串中未找到 '%@' 的凭证。";
+"Failed to save credentials to Keychain: %@" = "保存凭证到钥匙串失败：%@";
+"Failed to update credentials in Keychain: %@" = "更新钥匙串中的凭证失败：%@";
+"Failed to delete credentials from Keychain: %@" = "从钥匙串删除凭证失败：%@";
+"Keychain error occurred (status: %d)." = "发生钥匙串错误（状态：%d）。";
+"Failed to read configuration from '%@'." = "从 '%@' 读取配置失败。";
+"Failed to write configuration to '%@'." = "写入配置到 '%@' 失败。";
+"Invalid configuration: %@" = "无效配置：%@";
+"Configuration file not found at '%@'." = "在 '%@' 未找到配置文件。";
+"Failed to create configuration directory at '%@'." = "在 '%@' 创建配置目录失败。";
+"Failed to initialize network scanner. Please check network permissions." = "初始化网络扫描器失败。请检查网络权限。";
+"Network scan timed out. No SMB services were found within the time limit." = "网络扫描超时。在时间限制内未找到 SMB 服务。";
+"Failed to resolve service '%@'." = "解析服务 '%@' 失败。";
+"No network interface available. Please check your network connection." = "没有可用的网络接口。请检查您的网络连接。";
+"Synchronization conflict detected for '%@'. Please resolve the conflict." = "检测到 '%@' 的同步冲突。请解决冲突。";
+"Synchronization failed: %@" = "同步失败：%@";
+"Failed to monitor file changes at '%@'." = "监控 '%@' 的文件变化失败。";
+"Failed to read file '%@' for synchronization." = "读取文件 '%@' 进行同步失败。";
+"Failed to write file '%@' during synchronization." = "同步期间写入文件 '%@' 失败。";
+"Volume monitoring failed: %@" = "卷监控失败：%@";
+"Failed to check status of volume at '%@'." = "检查 '%@' 处卷的状态失败。";
+"Failed to enable launch at login: %@" = "启用登录时启动失败：%@";
+"Failed to disable launch at login: %@" = "禁用登录时启动失败：%@";
+"An unknown error occurred: %@" = "发生未知错误：%@";
+"The operation was cancelled." = "操作已取消。";
+"Invalid input for '%@': %@" = "'%@' 的输入无效：%@";
+
+// MARK: - SMBMounterError - 错误标题
+
+"Network Unreachable" = "网络不可达";
+"Authentication Failed" = "身份验证失败";
+"Mount Point Exists" = "挂载点已存在";
+"Mount Point Creation Failed" = "创建挂载点失败";
+"Permission Denied" = "权限被拒绝";
+"Invalid URL" = "无效 URL";
+"Mount Failed" = "挂载失败";
+"Share Not Found" = "未找到共享";
+"Connection Timeout" = "连接超时";
+"Not Mounted" = "未挂载";
+"Unmount Failed" = "卸载失败";
+"Keychain Access Denied" = "钥匙串访问被拒绝";
+"Credentials Not Found" = "未找到凭证";
+"Save Credentials Failed" = "保存凭证失败";
+"Update Credentials Failed" = "更新凭证失败";
+"Delete Credentials Failed" = "删除凭证失败";
+"Keychain Error" = "钥匙串错误";
+"Configuration Read Failed" = "读取配置失败";
+"Configuration Write Failed" = "写入配置失败";
+"Invalid Configuration" = "无效配置";
+"Configuration Not Found" = "未找到配置";
+"Directory Creation Failed" = "创建目录失败";
+"Scanner Initialization Failed" = "扫描器初始化失败";
+"Scan Timeout" = "扫描超时";
+"Service Resolution Failed" = "服务解析失败";
+"Network Unavailable" = "网络不可用";
+"Sync Failed" = "同步失败";
+"File Monitoring Failed" = "文件监控失败";
+"Sync Read Failed" = "同步读取失败";
+"Sync Write Failed" = "同步写入失败";
+"Volume Monitoring Failed" = "卷监控失败";
+"Status Check Failed" = "状态检查失败";
+"Launch Agent Registration Failed" = "启动代理注册失败";
+"Launch Agent Unregistration Failed" = "启动代理注销失败";
+"Unknown Error" = "未知错误";
+"Operation Cancelled" = "操作已取消";
+"Invalid Input" = "无效输入";
+
+// MARK: - SMBMounterError - 恢复建议
+
+"Check your network connection and verify the server address is correct." = "检查您的网络连接并验证服务器地址是否正确。";
+"Verify your username and password are correct. If using a domain account, include the domain name." = "验证您的用户名和密码是否正确。如果使用域账户，请包含域名。";
+"Choose a different mount point or unmount the existing volume first." = "选择其他挂载点或先卸载现有卷。";
+"Open System Preferences > Security & Privacy and grant Keychain access to LanMount." = "打开系统偏好设置 > 安全性与隐私，并授予 LanMount 钥匙串访问权限。";
+"Try scanning again or manually enter the server address." = "尝试重新扫描或手动输入服务器地址。";
+
+// MARK: - ErrorHandler - 恢复建议
+
+"Try again later or check if the server is available." = "稍后重试或检查服务器是否可用。";
+"Check your network connection and try syncing again." = "检查您的网络连接并重试同步。";
+"The volume may have been disconnected. Try remounting." = "卷可能已断开连接。尝试重新挂载。";
+"Check file permissions and available disk space." = "检查文件权限和可用磁盘空间。";
+"Try saving the credentials again or check Keychain Access." = "尝试重新保存凭证或检查钥匙串访问。";
+"Close any applications using files on this volume and try again." = "关闭使用此卷上文件的所有应用程序，然后重试。";
+"Review the conflicting files and choose which version to keep." = "查看冲突的文件并选择要保留的版本。";
+"An error occurred: %@" = "发生错误：%@";
+
+
+// MARK: - 无障碍标签
+
+// MountConfigView 无障碍
+"Accessibility: Mount config header" = "挂载配置";
+"Accessibility: Server address field" = "服务器地址";
+"Accessibility: Server address hint" = "输入服务器主机名或 IP 地址";
+"Accessibility: Empty field" = "空";
+"Accessibility: Share name field" = "共享名称";
+"Accessibility: Share name hint" = "输入共享文件夹的名称";
+"Accessibility: Username field" = "用户名";
+"Accessibility: Username hint" = "输入您的用户名，或留空以使用访客访问";
+"Accessibility: Empty username" = "空，访客访问";
+"Accessibility: Password field" = "密码";
+"Accessibility: Password hint" = "输入您的密码，或留空以使用访客访问";
+"Accessibility: Empty password" = "空";
+"Accessibility: Password has value" = "已输入密码";
+"Accessibility: Remember credentials toggle" = "记住凭证";
+"Accessibility: Remember credentials hint" = "启用后，凭证将安全存储在钥匙串中";
+"Accessibility: Toggle on" = "已启用";
+"Accessibility: Toggle off" = "已禁用";
+"Accessibility: Auto-mount toggle" = "登录时自动挂载";
+"Accessibility: Auto-mount hint" = "启用后，此共享将在您登录时自动挂载";
+"Accessibility: Sync toggle" = "启用同步";
+"Accessibility: Sync hint" = "启用后，本地和远程文件将保持同步";
+"Accessibility: Test connection button" = "测试连接";
+"Accessibility: Test connection hint" = "使用当前设置测试与 SMB 服务器的连接";
+"Accessibility: Testing" = "正在测试";
+"Accessibility: Cancel button" = "取消";
+"Accessibility: Cancel hint" = "关闭此窗口而不保存更改";
+"Accessibility: Save button" = "保存";
+"Accessibility: Save hint" = "保存挂载配置";
+"Accessibility: Saving" = "正在保存";
+"Accessibility: Test success" = "连接测试成功";
+"Accessibility: Test failed" = "连接测试失败";
+"Accessibility: Error prefix" = "错误";
+"Accessibility: Validation errors section" = "验证错误";
+
+// NetworkScannerView 无障碍
+"Accessibility: Scanning status" = "正在扫描网络";
+"Accessibility: Scanning progress" = "正在扫描网络中的 SMB 服务。这可能需要最多 30 秒。";
+"Accessibility: Empty state" = "未找到 SMB 服务。请确保您的 SMB 服务器在线且在同一网络中。";
+"Accessibility: Scan again button" = "重新扫描";
+"Accessibility: Scan again hint" = "开始新的 SMB 服务网络扫描";
+"Accessibility: Services count" = "找到 %d 个服务";
+"Accessibility: Services list" = "已发现的 SMB 服务列表";
+"Accessibility: IP label" = "IP 地址";
+"Accessibility: Shares label" = "共享";
+"Accessibility: Service row hint" = "双击以选择此服务";
+"Accessibility: Refresh button" = "刷新";
+"Accessibility: Refresh hint" = "开始新的网络扫描";
+"Accessibility: Scanning" = "正在扫描";
+"Accessibility: Select button" = "选择";
+"Accessibility: Select hint with service" = "选择 %@ 并打开挂载配置";
+"Accessibility: Select hint no selection" = "请先从列表中选择一个服务";
+
+// PreferencesView 无障碍
+"Accessibility: Preferences header" = "偏好设置";
+"Accessibility: Launch at login toggle" = "登录时启动";
+"Accessibility: Launch at login hint" = "启用后，LanMount 将在您登录时自动启动";
+"Accessibility: Updating" = "正在更新登录时启动设置";
+"Accessibility: Open settings button" = "打开登录项设置";
+"Accessibility: Open settings hint" = "打开系统设置以批准登录项";
+"Accessibility: Approval required" = "登录时启动需要在系统设置中批准";
+"Accessibility: Auto-reconnect toggle" = "自动重连";
+"Accessibility: Auto-reconnect hint" = "启用后，断开的挂载将自动重新连接";
+"Accessibility: Notifications toggle" = "显示通知";
+"Accessibility: Notifications hint" = "启用后，将显示挂载事件和错误的通知";
+"Accessibility: Scan interval slider" = "网络扫描间隔";
+"Accessibility: Scan interval hint" = "调整扫描网络变化的频率";
+"Accessibility: Preset button" = "将扫描间隔设置为 %@";
+"Accessibility: Presets group" = "扫描间隔预设";
+"Accessibility: Log level picker" = "日志级别";
+"Accessibility: Log level hint" = "选择日志消息的详细程度";
+"Accessibility: Log level description" = "日志级别描述";
+"Accessibility: View logs button" = "查看日志";
+"Accessibility: View logs hint" = "在访达中打开日志文件夹";
+"Accessibility: Log location" = "日志文件位置";
+"Accessibility: Log size" = "日志总大小：%@";
+"Accessibility: Reset button" = "恢复默认设置";
+"Accessibility: Reset hint" = "将所有设置恢复为默认值";
+"Accessibility: Dismiss error button" = "关闭错误";
+"Accessibility: Dismiss error hint" = "关闭此错误消息";
+
+// MenuBarController 无障碍
+"Accessibility: Add mount tooltip" = "打开挂载配置对话框以添加新的 SMB 共享";
+"Accessibility: Scan network tooltip" = "扫描本地网络以查找可用的 SMB 服务";
+"Accessibility: Preferences tooltip" = "打开应用程序偏好设置";
+"Accessibility: Quit tooltip" = "退出 LanMount 应用程序";
+"Accessibility: Mounted volumes count" = "%d 个已挂载卷";
+"Accessibility: Open in Finder tooltip" = "在访达中打开 %@";
+"Accessibility: Unmount tooltip" = "从系统卸载 %@";
+"Accessibility: Volume info tooltip" = "卷信息";
+
+
+// MARK: - 底部导航栏 (Bottom Navigation Bar)
+
+// Tab 标题
+"Overview" = "概览";
+"Disk Config" = "磁盘配置";
+"Disk Info" = "磁盘信息";
+"System Config" = "系统配置";
+
+// 图表标签
+"Storage Trend" = "存储趋势";
+"IO History" = "IO 历史";
+"Health Status" = "健康状态";
+"Past 7 days" = "过去 7 天";
+"1 Minute" = "1分钟";
+"5 Minutes" = "5分钟";
+"1 Hour" = "1小时";
+"Health Score" = "健康度";
+"Latency" = "延迟";
+"Success Rate" = "成功率";
+
+// 徽章和状态标签
+"Excellent" = "优秀";
+"Good" = "良好";
+"Fair" = "一般";
+"Poor" = "较差";
+
+// 系统配置标签
+"General Settings" = "通用设置";
+"Notification Settings" = "通知设置";
+"Data Management" = "数据管理";
+"About" = "关于";
+
+// 概览选项卡
+"Quick Actions" = "快速操作";
+"Mount All" = "全部挂载";
+"Unmount All" = "全部卸载";
+"Refresh Status" = "刷新状态";
+"Storage Summary" = "存储汇总";
+"IO Activity" = "IO 活动";
+"No Configurations" = "无配置";
+"Add your first SMB configuration to get started" = "添加您的第一个 SMB 配置以开始使用";
+
+// 磁盘配置选项卡
+"Add Configuration" = "添加配置";
+"Edit Configuration" = "编辑配置";
+"Delete Configuration" = "删除配置";
+"Scan for Shares" = "扫描共享";
+"Server" = "服务器";
+"Share" = "共享";
+"Mount Status" = "挂载状态";
+"Mounted" = "已挂载";
+"Not Mounted" = "未挂载";
+
+// 磁盘信息选项卡
+"Storage Overview" = "存储概览";
+"IO Performance" = "IO 性能";
+"Health Dashboard" = "健康仪表盘";
+"Volume Details" = "卷详情";
+"Export Report" = "导出报告";
+"Used" = "已用";
+"Available" = "可用";
+"Total" = "总计";
+"Read Speed" = "读取速度";
+"Write Speed" = "写入速度";
+
+// 系统配置选项卡
+"Launch at Login" = "登录时启动";
+"Show in Menu Bar" = "在菜单栏显示";
+"Auto-Mount on Network Change" = "网络变化时自动挂载";
+"Mount Notifications" = "挂载通知";
+"Error Notifications" = "错误通知";
+"Storage Warning Notifications" = "存储警告通知";
+"Export Data" = "导出数据";
+"Import Data" = "导入数据";
+"Version" = "版本";
+
+// 无障碍标签 - 底部导航栏
+"Accessibility: Tab bar" = "底部导航栏";
+"Accessibility: Overview tab" = "概览选项卡";
+"Accessibility: Disk config tab" = "磁盘配置选项卡";
+"Accessibility: Disk info tab" = "磁盘信息选项卡";
+"Accessibility: System config tab" = "系统配置选项卡";
+"Accessibility: Tab selected" = "已选中";
+"Accessibility: Tab badge count" = "%d 个通知";
+"Accessibility: Tab badge dot" = "有新通知";
+
+
+// MARK: - 额外的本地化字符串
+
+// DashboardView
+"mounted" = "已挂载";
+"configured" = "已配置";
+"v1.0.0" = "v1.0.0";
+"Current" = "当前";
+"Average" = "平均";
+"Peak" = "峰值";
+
+// ConnectionManagerView
+"Connection Manager" = "连接管理器";
+"Are you sure you want to delete %d configuration(s)? This action cannot be undone." = "确定要删除 %d 个配置吗？此操作无法撤销。";
+"Add SMB mount configurations to get started." = "添加 SMB 挂载配置以开始使用。";
+
+// MainTabView
+"Main Application View" = "主应用视图";
+"Overview Tab Content" = "概览选项卡内容";
+"Disk Configuration Tab Content" = "磁盘配置选项卡内容";
+"Disk Information Tab Content" = "磁盘信息选项卡内容";
+"System Configuration Tab Content" = "系统配置选项卡内容";
+"Please upgrade to macOS 13.0 or later for the full experience." = "请升级到 macOS 13.0 或更高版本以获得完整体验。";
+"%d volumes mounted" = "已挂载 %d 个卷";
+
+// OverviewTabView
+"Connections" = "连接";
+"%d configured" = "已配置 %d 个";
+"Connection status grid with %d connections" = "连接状态网格，共 %d 个连接";
+"Double tap to view disk details" = "双击查看磁盘详情";
+"Auto-mount enabled" = "已启用自动挂载";
+"Storage" = "存储";
+"Storage: %.1f percent used, %@ of %@" = "存储：已使用 %.1f%%，%@ / %@";
+"Summary" = "摘要";
+"Storage summary: %@ used of %@, %.1f percent" = "存储摘要：已使用 %@，共 %@，%.1f%%";
+"%d volumes" = "%d 个卷";
+"IO activity: Read %@, Write %@" = "IO 活动：读取 %@，写入 %@";
+"Live" = "实时";
+"Read" = "读取";
+"Write" = "写入";
+"%d active volumes" = "%d 个活动卷";
+"No active IO" = "无活动 IO";
+"No SMB connections configured. Add a connection to get started." = "未配置 SMB 连接。添加连接以开始使用。";
+"No Connections" = "无连接";
+"Add an SMB connection to start mounting network drives." = "添加 SMB 连接以开始挂载网络驱动器。";
+"Add Connection" = "添加连接";
+"connected" = "已连接";
+"disconnected" = "已断开";
+"%@ share %@ on server %@, %@" = "%@ 共享 %@ 在服务器 %@，%@";
+
+// DiskConfigTabView
+"Disk Configurations" = "磁盘配置";
+"%d configurations" = "%d 个配置";
+"Scan network for available SMB shares" = "扫描网络以查找可用的 SMB 共享";
+"Opens network scanner to discover SMB shares" = "打开网络扫描器以发现 SMB 共享";
+"Opens form to add a new SMB configuration" = "打开表单以添加新的 SMB 配置";
+"Configuration list with %d items" = "配置列表，共 %d 项";
+"Add SMB mount configurations to connect to network drives." = "添加 SMB 挂载配置以连接到网络驱动器。";
+"Add Manually" = "手动添加";
+"No configurations. Add SMB mount configurations to connect to network drives." = "无配置。添加 SMB 挂载配置以连接到网络驱动器。";
+"Mount failed" = "挂载失败";
+"Auto" = "自动";
+"Manual" = "手动";
+"Sync" = "同步";
+"Saved" = "已保存";
+"Success rate %.0f percent" = "成功率 %.0f%%";
+"Edit" = "编辑";
+"Opens form to edit this configuration" = "打开表单以编辑此配置";
+"Deletes this configuration" = "删除此配置";
+"Mount" = "挂载";
+"Mount Drive" = "挂载驱动器";
+"Mounts this network drive" = "挂载此网络驱动器";
+"Configuration for server %@, share %@" = "服务器 %@ 的配置，共享 %@";
+"auto-mount enabled" = "已启用自动挂载";
+"sync enabled" = "已启用同步";
+"Double tap for options" = "双击查看选项";
+"Select Share" = "选择共享";
+"Server %@ has multiple shares. Select one to configure:" = "服务器 %@ 有多个共享。选择一个进行配置：";
+"Connected successfully (%.0fms)" = "连接成功（%.0fms）";
+"Connection failed" = "连接失败";
+
+// DiskInfoTabView
+"Disk Information" = "磁盘信息";
+"Storage Details" = "存储详情";
+"IO Performance" = "IO 性能";
+"Health Status" = "健康状态";
+"No mounted volumes" = "无已挂载卷";
+"Mount some volumes to see storage information" = "挂载一些卷以查看存储信息";
+"Go to Disk Config" = "前往磁盘配置";
+
+// SystemConfigTabView
+"System Configuration" = "系统配置";
+"Startup" = "启动";
+"Start LanMount when you log in" = "登录时启动 LanMount";
+"Menu Bar" = "菜单栏";
+"Show LanMount icon in menu bar" = "在菜单栏显示 LanMount 图标";
+"Auto-Mount" = "自动挂载";
+"Automatically mount configured shares when network changes" = "网络变化时自动挂载已配置的共享";
+"Notifications" = "通知";
+"Show notifications when volumes are mounted or unmounted" = "挂载或卸载卷时显示通知";
+"Show notifications when errors occur" = "发生错误时显示通知";
+"Show notifications when storage is running low" = "存储空间不足时显示通知";
+"Data" = "数据";
+"Export configurations and settings" = "导出配置和设置";
+"Import configurations and settings" = "导入配置和设置";
+"App Info" = "应用信息";
+
+// QuickActionsPanel
+"Quick Actions" = "快速操作";
+"Mount All" = "全部挂载";
+"Unmount All" = "全部卸载";
+"Refresh" = "刷新";
+"Mounting all configured shares..." = "正在挂载所有已配置的共享...";
+"Unmounting all volumes..." = "正在卸载所有卷...";
+"Refreshing status..." = "正在刷新状态...";
+
+// 窗口标题
+"Add New Mount" = "添加新挂载";
+"LanMount Dashboard" = "LanMount 仪表盘";
+
+// 菜单栏
+"Dashboard" = "仪表盘";
+
+
+// ConnectionManagerView 额外字符串
+"Delete Configurations" = "删除配置";
+"An unknown error occurred." = "发生未知错误。";
+"Success" = "成功";
+"Operation completed successfully." = "操作成功完成。";
+"Import" = "导入";
+"Import configurations from a JSON file" = "从 JSON 文件导入配置";
+"Import configurations" = "导入配置";
+"Opens a file picker to select a JSON file containing configurations to import" = "打开文件选择器以选择包含配置的 JSON 文件进行导入";
+"Export" = "导出";
+"A modern SMB mount manager for macOS" = "适用于 macOS 的现代 SMB 挂载管理器";
+
+
+// 语言设置
+"Language" = "语言";
+"System Default" = "跟随系统";
+"Restart required for language change to take full effect" = "需要重启应用以使语言更改完全生效";
+
+/* Mount/Unmount buttons */
+"Mount" = "挂载";
+"Unmount" = "卸载";
+"Mount Drive" = "挂载驱动器";
+"Unmount Drive" = "卸载驱动器";
+"Mounts this network drive" = "挂载此网络驱动器";
+"Unmounts this network drive" = "卸载此网络驱动器";
+
+/* Mount status */
+"Mounted" = "已挂载";
+"Not Mounted" = "未挂载";

@@ -1,0 +1,14 @@
+# Appfile for LanMount
+# 应用基本配置
+
+# Apple ID
+apple_id(ENV["APPLE_ID"])
+
+# Team ID
+team_id(ENV["TEAM_ID"])
+
+# Bundle Identifier
+app_identifier("com.lanmount.app")
+
+# 可选：指定特定的 iTunes Connect Team ID
+# itc_team_id("YOUR_ITC_TEAM_ID")

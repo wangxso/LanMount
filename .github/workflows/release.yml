@@ -1,0 +1,363 @@
+# GitHub Actions workflow for automated LanMount releases
+#
+# This workflow uses Fastlane to:
+# 1. Build the app in Release configuration
+# 2. Sign the app with Developer ID certificate
+# 3. Create a DMG installer
+# 4. Notarize the DMG with Apple
+# 5. Create a GitHub Release with the DMG attached
+#
+# Triggers:
+# - Manual dispatch with version input
+# - Push of version tags (v*)
+#
+# Required Secrets:
+# - APPLE_DEVELOPER_CERTIFICATE_P12_BASE64: Base64-encoded .p12 certificate
+# - APPLE_DEVELOPER_CERTIFICATE_PASSWORD: Password for the .p12 certificate
+# - APPLE_ID: Apple ID email for notarization
+# - APPLE_TEAM_ID: Apple Developer Team ID (10-character string)
+# - APPLE_APP_SPECIFIC_PASSWORD: App-specific password for notarization
+
+name: Release
+
+on:
+  # Manual trigger with version input
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        type: boolean
+        default: false
+      skip_notarization:
+        description: 'Skip notarization (for testing)'
+        required: false
+        type: boolean
+        default: false
+
+  # Trigger on version tags
+  push:
+    tags:
+      - 'v*'
+
+# Ensure only one release workflow runs at a time
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  APP_NAME: LanMount
+  XCODE_VERSION: '15.0'
+
+jobs:
+  # ==========================================================================
+  # Build and Release Job
+  # ==========================================================================
+  build-and-release:
+    name: Build, Sign, Notarize, and Release
+    runs-on: macos-14  # macOS Sonoma with Apple Silicon
+    
+    steps:
+      # ----------------------------------------------------------------------
+      # Setup
+      # ----------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for changelog generation
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            # Extract version from tag (remove 'v' prefix)
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Select Xcode version
+        run: |
+          sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app/Contents/Developer
+          xcodebuild -version
+
+      # ----------------------------------------------------------------------
+      # Install Fastlane
+      # ----------------------------------------------------------------------
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: LanMount
+
+      - name: Install Fastlane
+        run: |
+          cd LanMount
+          bundle install
+          bundle exec fastlane --version
+
+      # ----------------------------------------------------------------------
+      # Certificate Setup
+      # ----------------------------------------------------------------------
+      - name: Install Apple Developer Certificate
+        env:
+          CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
+        run: |
+          # Create temporary keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+          
+          # Create keychain
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          
+          # Import certificate
+          CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
+          echo -n "$CERTIFICATE_P12_BASE64" | base64 --decode > "$CERTIFICATE_PATH"
+          
+          security import "$CERTIFICATE_PATH" \
+            -P "$CERTIFICATE_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12 \
+            -k "$KEYCHAIN_PATH"
+          
+          # Set keychain as default
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+          
+          # Allow codesign to access keychain
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          
+          echo "Certificate installed successfully"
+          
+          # Verify certificate
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+      # ----------------------------------------------------------------------
+      # Create .env file for Fastlane
+      # ----------------------------------------------------------------------
+      - name: Create Fastlane environment file
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        run: |
+          cd LanMount
+          cat > .env << EOF
+          APPLE_ID=$APPLE_ID
+          TEAM_ID=$APPLE_TEAM_ID
+          APP_SPECIFIC_PASSWORD=$APPLE_APP_SPECIFIC_PASSWORD
+          CODE_SIGN_IDENTITY=Developer ID Application
+          APP_NAME=LanMount
+          BUNDLE_ID=com.lanmount.app
+          EOF
+          echo "Fastlane .env file created"
+
+      # ----------------------------------------------------------------------
+      # Build with Fastlane
+      # ----------------------------------------------------------------------
+      - name: Build and package with Fastlane
+        run: |
+          cd LanMount
+          VERSION="${{ steps.version.outputs.version }}"
+          
+          if [ "${{ github.event.inputs.skip_notarization }}" = "true" ]; then
+            echo "Building without notarization..."
+            bundle exec fastlane release version:$VERSION skip_notarize:true
+          else
+            echo "Building with notarization..."
+            bundle exec fastlane release version:$VERSION
+          fi
+
+      - name: Verify build output
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          DMG_PATH="LanMount/build/${{ env.APP_NAME }}-$VERSION.dmg"
+          
+          if [ ! -f "$DMG_PATH" ]; then
+            echo "Error: DMG not found at $DMG_PATH"
+            exit 1
+          fi
+          
+          echo "DMG created successfully at $DMG_PATH"
+          ls -lh "$DMG_PATH"
+
+      # ----------------------------------------------------------------------
+      # Calculate SHA256 for Homebrew
+      # ----------------------------------------------------------------------
+      - name: Calculate DMG SHA256
+        id: sha256
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          DMG_PATH="LanMount/build/${{ env.APP_NAME }}-$VERSION.dmg"
+          
+          SHA256=$(shasum -a 256 "$DMG_PATH" | awk '{print $1}')
+          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
+          echo "SHA256: $SHA256"
+
+      # ----------------------------------------------------------------------
+      # Generate Release Notes
+      # ----------------------------------------------------------------------
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          NOTARIZED="${{ github.event.inputs.skip_notarization != 'true' }}"
+          
+          # Create release notes
+          cat > release_notes.md << EOF
+          ## LanMount v$VERSION
+          
+          ### Downloads
+          
+          | Platform | Download |
+          |----------|----------|
+          | macOS (Universal) | [LanMount-$VERSION.dmg](https://github.com/${{ github.repository }}/releases/download/v$VERSION/LanMount-$VERSION.dmg) |
+          
+          ### System Requirements
+          - macOS 12.0 (Monterey) or later
+          - Apple Silicon (M1/M2/M3/M4) or Intel processor
+          
+          ### Security
+          - ✅ Code signed with Apple Developer ID
+          - $([ "$NOTARIZED" = "true" ] && echo "✅ Notarized by Apple" || echo "⚠️ Not notarized (test build)")
+          - ✅ Hardened Runtime enabled
+          
+          ### Installation
+          1. Download the DMG file
+          2. Open the DMG and drag LanMount to Applications
+          3. Launch LanMount from Applications
+          
+          ### Homebrew
+          \`\`\`bash
+          brew install --cask lanmount
+          \`\`\`
+          
+          **SHA256:** \`${{ steps.sha256.outputs.sha256 }}\`
+          
+          ---
+          
+          See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/LanMount/CHANGELOG.md) for detailed changes.
+          EOF
+          
+          echo "Release notes generated"
+          cat release_notes.md
+
+      # ----------------------------------------------------------------------
+      # Create GitHub Release
+      # ----------------------------------------------------------------------
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: LanMount v${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ github.event.inputs.prerelease == 'true' }}
+          files: |
+            LanMount/build/${{ env.APP_NAME }}-${{ steps.version.outputs.version }}.dmg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ----------------------------------------------------------------------
+      # Update Homebrew Cask (Optional)
+      # ----------------------------------------------------------------------
+      - name: Update Homebrew Cask
+        if: ${{ secrets.HOMEBREW_TAP_TOKEN != '' && github.event.inputs.skip_notarization != 'true' }}
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          SHA256="${{ steps.sha256.outputs.sha256 }}"
+          
+          echo "Updating Homebrew Cask..."
+          echo "Version: $VERSION"
+          echo "SHA256: $SHA256"
+          
+          # Clone your homebrew tap repository
+          git clone https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/${{ github.repository_owner }}/homebrew-lanmount.git
+          cd homebrew-lanmount
+          
+          # Update the cask formula
+          cat > Casks/lanmount.rb << EOF
+          cask "lanmount" do
+            version "$VERSION"
+            sha256 "$SHA256"
+          
+            url "https://github.com/${{ github.repository }}/releases/download/v#{version}/LanMount-#{version}.dmg"
+            name "LanMount"
+            desc "macOS SMB network share mounter"
+            homepage "https://github.com/${{ github.repository }}"
+          
+            livecheck do
+              url :url
+              strategy :github_latest
+            end
+          
+            app "LanMount.app"
+          
+            zap trash: [
+              "~/Library/Application Support/LanMount",
+              "~/Library/Caches/com.lanmount.app",
+              "~/Library/Preferences/com.lanmount.app.plist",
+            ]
+          end
+          EOF
+          
+          # Commit and push
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Casks/lanmount.rb
+          git commit -m "Update LanMount to v$VERSION"
+          git push
+
+      # ----------------------------------------------------------------------
+      # Cleanup
+      # ----------------------------------------------------------------------
+      - name: Cleanup keychain and secrets
+        if: always()
+        run: |
+          # Remove .env file
+          rm -f LanMount/.env
+          
+          # Remove keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          if [ -f "$KEYCHAIN_PATH" ]; then
+            security delete-keychain "$KEYCHAIN_PATH" || true
+          fi
+
+      # ----------------------------------------------------------------------
+      # Summary
+      # ----------------------------------------------------------------------
+      - name: Release Summary
+        if: success()
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          NOTARIZED="${{ github.event.inputs.skip_notarization != 'true' }}"
+          
+          echo "## 🎉 Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | $VERSION |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tag | v$VERSION |" >> $GITHUB_STEP_SUMMARY
+          echo "| SHA256 | \`${{ steps.sha256.outputs.sha256 }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Notarized | $NOTARIZED |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pre-release | ${{ github.event.inputs.prerelease == 'true' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Downloads" >> $GITHUB_STEP_SUMMARY
+          echo "- [LanMount-$VERSION.dmg](https://github.com/${{ github.repository }}/releases/download/v$VERSION/LanMount-$VERSION.dmg)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🍺 Homebrew" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "brew install --cask lanmount" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY

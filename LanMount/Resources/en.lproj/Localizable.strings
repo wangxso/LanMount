@@ -1,0 +1,556 @@
+/* 
+  Localizable.strings (English)
+  LanMount
+
+  English localization for LanMount SMB Mounter application
+  Requirements: 20.1 - Internationalization support
+*/
+
+// MARK: - General
+
+"Error" = "Error";
+"Cancel" = "Cancel";
+"Save" = "Save";
+"OK" = "OK";
+"Delete" = "Delete";
+"Close" = "Close";
+
+// MARK: - MountConfigView
+
+"Mount Configuration" = "Mount Configuration";
+"Server Information" = "Server Information";
+"Server Address" = "Server Address";
+"e.g., 192.168.1.100 or server.local" = "e.g., 192.168.1.100 or server.local";
+"Share Name" = "Share Name";
+"e.g., Documents or Public" = "e.g., Documents or Public";
+"Authentication" = "Authentication";
+"Credentials" = "Credentials";
+"Username" = "Username";
+"e.g., admin or DOMAIN\\user" = "e.g., admin or DOMAIN\\user";
+"Leave empty for guest access" = "Leave empty for guest access";
+"Password" = "Password";
+"Enter password" = "Enter password";
+"Remember Credentials" = "Remember Credentials";
+"Store credentials securely in Keychain" = "Store credentials securely in Keychain";
+"Options" = "Options";
+"Auto-Mount on Login" = "Auto-Mount on Login";
+"Automatically mount this share when you log in" = "Automatically mount this share when you log in";
+"Enable Synchronization" = "Enable Synchronization";
+"Keep local and remote files in sync" = "Keep local and remote files in sync";
+"Test Connection" = "Test Connection";
+"Connection test not available" = "Connection test not available";
+"Connection successful" = "Connection successful";
+"Server address is required" = "Server address is required";
+"Invalid server address format" = "Invalid server address format";
+"Share name is required" = "Share name is required";
+"Invalid share name format" = "Invalid share name format";
+
+// MARK: - NetworkScannerView
+
+"Network Scanner" = "Network Scanner";
+"Scanning..." = "Scanning...";
+"Scanning network for SMB services..." = "Scanning network for SMB services...";
+"This may take up to 30 seconds" = "This may take up to 30 seconds";
+"No SMB Services Found" = "No SMB Services Found";
+"Make sure your SMB servers are online and on the same network." = "Make sure your SMB servers are online and on the same network.";
+"Scan Again" = "Scan Again";
+"Discovered Services" = "Discovered Services";
+"found" = "found";
+"Refresh" = "Refresh";
+"Select" = "Select";
+
+// MARK: - PreferencesView
+
+"Preferences" = "Preferences";
+"General" = "General";
+"Launch at Login" = "Launch at Login";
+"Automatically start LanMount when you log in" = "Automatically start LanMount when you log in";
+"Requires approval in System Settings" = "Requires approval in System Settings";
+"Open Settings" = "Open Settings";
+"Auto-Reconnect" = "Auto-Reconnect";
+"Automatically reconnect when a mount is disconnected" = "Automatically reconnect when a mount is disconnected";
+"Show Notifications" = "Show Notifications";
+"Display notifications for mount events and errors" = "Display notifications for mount events and errors";
+"Network" = "Network";
+"Network Scan Interval" = "Network Scan Interval";
+"How often to scan for network changes when monitoring mounts" = "How often to scan for network changes when monitoring mounts";
+"1 min" = "1 min";
+"5 min" = "5 min";
+"10 min" = "10 min";
+"15 min" = "15 min";
+"1 minute" = "1 minute";
+"%d minutes" = "%d minutes";
+"Logging" = "Logging";
+"Log Level" = "Log Level";
+"Debug" = "Debug";
+"Info" = "Info";
+"Warning" = "Warning";
+"Detailed information for debugging. May impact performance." = "Detailed information for debugging. May impact performance.";
+"General information about operations. Recommended for normal use." = "General information about operations. Recommended for normal use.";
+"Warnings and potential issues. Less verbose." = "Warnings and potential issues. Less verbose.";
+"Only errors. Minimal logging." = "Only errors. Minimal logging.";
+"View Logs" = "View Logs";
+"Log files location:" = "Log files location:";
+"Total log size: %@" = "Total log size: %@";
+"Reset to Defaults" = "Reset to Defaults";
+"Failed to save settings: %@" = "Failed to save settings: %@";
+
+// MARK: - MenuBarController
+
+"LanMount - Connected" = "LanMount - Connected";
+"LanMount - Connecting" = "LanMount - Connecting";
+"LanMount - Error" = "LanMount - Error";
+"No Mounted Volumes" = "No Mounted Volumes";
+"Mounted Volumes" = "Mounted Volumes";
+"Open in Finder" = "Open in Finder";
+"Unmount" = "Unmount";
+"Mount Point: " = "Mount Point: ";
+"Status: " = "Status: ";
+"Connected" = "Connected";
+"Disconnected" = "Disconnected";
+"Connecting..." = "Connecting...";
+"Error: " = "Error: ";
+"Add New Mount..." = "Add New Mount...";
+"Scan Network..." = "Scan Network...";
+"Preferences..." = "Preferences...";
+"Quit LanMount" = "Quit LanMount";
+
+// MARK: - NotificationManager
+
+"Mount Successful" = "Mount Successful";
+"Mount Failed" = "Mount Failed";
+"Volume Disconnected" = "Volume Disconnected";
+"Sync Complete" = "Sync Complete";
+"Sync Conflict" = "Sync Conflict";
+"Connected to %@/%@" = "Connected to %@/%@";
+"Failed to connect to %@/%@: %@" = "Failed to connect to %@/%@: %@";
+"Connection to %@ was lost" = "Connection to %@ was lost";
+"1 file synchronized for %@" = "1 file synchronized for %@";
+"%d files synchronized for %@" = "%d files synchronized for %@";
+"Conflict detected for %@" = "Conflict detected for %@";
+"Reconnect" = "Reconnect";
+"View Details" = "View Details";
+"Dismiss" = "Dismiss";
+
+// MARK: - SMBMounterError - Error Descriptions
+
+"Cannot connect to server '%@'. Please check your network connection and verify the server address." = "Cannot connect to server '%@'. Please check your network connection and verify the server address.";
+"Authentication failed for '%@/%@'. Please check your username and password." = "Authentication failed for '%@/%@'. Please check your username and password.";
+"Mount point '%@' already exists. Please choose a different location or unmount the existing volume." = "Mount point '%@' already exists. Please choose a different location or unmount the existing volume.";
+"Failed to create mount point at '%@'. Please check permissions." = "Failed to create mount point at '%@'. Please check permissions.";
+"Permission denied for operation: %@. Please check your access rights." = "Permission denied for operation: %@. Please check your access rights.";
+"Invalid SMB URL: '%@'. Please use the format smb://server/share." = "Invalid SMB URL: '%@'. Please use the format smb://server/share.";
+"Mount operation failed: %@" = "Mount operation failed: %@";
+"Share '%@' not found on server '%@'. Please verify the share name." = "Share '%@' not found on server '%@'. Please verify the share name.";
+"Connection to '%@' timed out. The server may be slow or unreachable." = "Connection to '%@' timed out. The server may be slow or unreachable.";
+"The volume at '%@' is not currently mounted." = "The volume at '%@' is not currently mounted.";
+"Failed to unmount '%@': %@" = "Failed to unmount '%@': %@";
+"Access to the Keychain was denied. Please check your security settings." = "Access to the Keychain was denied. Please check your security settings.";
+"Credentials for '%@' not found in Keychain." = "Credentials for '%@' not found in Keychain.";
+"Failed to save credentials to Keychain: %@" = "Failed to save credentials to Keychain: %@";
+"Failed to update credentials in Keychain: %@" = "Failed to update credentials in Keychain: %@";
+"Failed to delete credentials from Keychain: %@" = "Failed to delete credentials from Keychain: %@";
+"Keychain error occurred (status: %d)." = "Keychain error occurred (status: %d).";
+"Failed to read configuration from '%@'." = "Failed to read configuration from '%@'.";
+"Failed to write configuration to '%@'." = "Failed to write configuration to '%@'.";
+"Invalid configuration: %@" = "Invalid configuration: %@";
+"Configuration file not found at '%@'." = "Configuration file not found at '%@'.";
+"Failed to create configuration directory at '%@'." = "Failed to create configuration directory at '%@'.";
+"Failed to initialize network scanner. Please check network permissions." = "Failed to initialize network scanner. Please check network permissions.";
+"Network scan timed out. No SMB services were found within the time limit." = "Network scan timed out. No SMB services were found within the time limit.";
+"Failed to resolve service '%@'." = "Failed to resolve service '%@'.";
+"No network interface available. Please check your network connection." = "No network interface available. Please check your network connection.";
+"Synchronization conflict detected for '%@'. Please resolve the conflict." = "Synchronization conflict detected for '%@'. Please resolve the conflict.";
+"Synchronization failed: %@" = "Synchronization failed: %@";
+"Failed to monitor file changes at '%@'." = "Failed to monitor file changes at '%@'.";
+"Failed to read file '%@' for synchronization." = "Failed to read file '%@' for synchronization.";
+"Failed to write file '%@' during synchronization." = "Failed to write file '%@' during synchronization.";
+"Volume monitoring failed: %@" = "Volume monitoring failed: %@";
+"Failed to check status of volume at '%@'." = "Failed to check status of volume at '%@'.";
+"Failed to enable launch at login: %@" = "Failed to enable launch at login: %@";
+"Failed to disable launch at login: %@" = "Failed to disable launch at login: %@";
+"An unknown error occurred: %@" = "An unknown error occurred: %@";
+"The operation was cancelled." = "The operation was cancelled.";
+"Invalid input for '%@': %@" = "Invalid input for '%@': %@";
+
+// MARK: - SMBMounterError - Error Titles
+
+"Network Unreachable" = "Network Unreachable";
+"Authentication Failed" = "Authentication Failed";
+"Mount Point Exists" = "Mount Point Exists";
+"Mount Point Creation Failed" = "Mount Point Creation Failed";
+"Permission Denied" = "Permission Denied";
+"Invalid URL" = "Invalid URL";
+"Mount Failed" = "Mount Failed";
+"Share Not Found" = "Share Not Found";
+"Connection Timeout" = "Connection Timeout";
+"Not Mounted" = "Not Mounted";
+"Unmount Failed" = "Unmount Failed";
+"Keychain Access Denied" = "Keychain Access Denied";
+"Credentials Not Found" = "Credentials Not Found";
+"Save Credentials Failed" = "Save Credentials Failed";
+"Update Credentials Failed" = "Update Credentials Failed";
+"Delete Credentials Failed" = "Delete Credentials Failed";
+"Keychain Error" = "Keychain Error";
+"Configuration Read Failed" = "Configuration Read Failed";
+"Configuration Write Failed" = "Configuration Write Failed";
+"Invalid Configuration" = "Invalid Configuration";
+"Configuration Not Found" = "Configuration Not Found";
+"Directory Creation Failed" = "Directory Creation Failed";
+"Scanner Initialization Failed" = "Scanner Initialization Failed";
+"Scan Timeout" = "Scan Timeout";
+"Service Resolution Failed" = "Service Resolution Failed";
+"Network Unavailable" = "Network Unavailable";
+"Sync Failed" = "Sync Failed";
+"File Monitoring Failed" = "File Monitoring Failed";
+"Sync Read Failed" = "Sync Read Failed";
+"Sync Write Failed" = "Sync Write Failed";
+"Volume Monitoring Failed" = "Volume Monitoring Failed";
+"Status Check Failed" = "Status Check Failed";
+"Launch Agent Registration Failed" = "Launch Agent Registration Failed";
+"Launch Agent Unregistration Failed" = "Launch Agent Unregistration Failed";
+"Unknown Error" = "Unknown Error";
+"Operation Cancelled" = "Operation Cancelled";
+"Invalid Input" = "Invalid Input";
+
+// MARK: - SMBMounterError - Recovery Suggestions
+
+"Check your network connection and verify the server address is correct." = "Check your network connection and verify the server address is correct.";
+"Verify your username and password are correct. If using a domain account, include the domain name." = "Verify your username and password are correct. If using a domain account, include the domain name.";
+"Choose a different mount point or unmount the existing volume first." = "Choose a different mount point or unmount the existing volume first.";
+"Open System Preferences > Security & Privacy and grant Keychain access to LanMount." = "Open System Preferences > Security & Privacy and grant Keychain access to LanMount.";
+"Try scanning again or manually enter the server address." = "Try scanning again or manually enter the server address.";
+
+// MARK: - ErrorHandler - Recovery Suggestions
+
+"Try again later or check if the server is available." = "Try again later or check if the server is available.";
+"Check your network connection and try syncing again." = "Check your network connection and try syncing again.";
+"The volume may have been disconnected. Try remounting." = "The volume may have been disconnected. Try remounting.";
+"Check file permissions and available disk space." = "Check file permissions and available disk space.";
+"Try saving the credentials again or check Keychain Access." = "Try saving the credentials again or check Keychain Access.";
+"Close any applications using files on this volume and try again." = "Close any applications using files on this volume and try again.";
+"Review the conflicting files and choose which version to keep." = "Review the conflicting files and choose which version to keep.";
+"An error occurred: %@" = "An error occurred: %@";
+
+
+// MARK: - Accessibility Labels
+
+// MountConfigView Accessibility
+"Accessibility: Mount config header" = "Mount Configuration";
+"Accessibility: Server address field" = "Server Address";
+"Accessibility: Server address hint" = "Enter the server hostname or IP address";
+"Accessibility: Empty field" = "Empty";
+"Accessibility: Share name field" = "Share Name";
+"Accessibility: Share name hint" = "Enter the name of the shared folder";
+"Accessibility: Username field" = "Username";
+"Accessibility: Username hint" = "Enter your username, or leave empty for guest access";
+"Accessibility: Empty username" = "Empty, guest access";
+"Accessibility: Password field" = "Password";
+"Accessibility: Password hint" = "Enter your password, or leave empty for guest access";
+"Accessibility: Empty password" = "Empty";
+"Accessibility: Password has value" = "Password entered";
+"Accessibility: Remember credentials toggle" = "Remember Credentials";
+"Accessibility: Remember credentials hint" = "When enabled, credentials will be stored securely in Keychain";
+"Accessibility: Toggle on" = "Enabled";
+"Accessibility: Toggle off" = "Disabled";
+"Accessibility: Auto-mount toggle" = "Auto-Mount on Login";
+"Accessibility: Auto-mount hint" = "When enabled, this share will be automatically mounted when you log in";
+"Accessibility: Sync toggle" = "Enable Synchronization";
+"Accessibility: Sync hint" = "When enabled, local and remote files will be kept in sync";
+"Accessibility: Test connection button" = "Test Connection";
+"Accessibility: Test connection hint" = "Tests the connection to the SMB server with current settings";
+"Accessibility: Testing" = "Testing in progress";
+"Accessibility: Cancel button" = "Cancel";
+"Accessibility: Cancel hint" = "Closes this window without saving changes";
+"Accessibility: Save button" = "Save";
+"Accessibility: Save hint" = "Saves the mount configuration";
+"Accessibility: Saving" = "Saving in progress";
+"Accessibility: Test success" = "Connection test successful";
+"Accessibility: Test failed" = "Connection test failed";
+"Accessibility: Error prefix" = "Error";
+"Accessibility: Validation errors section" = "Validation Errors";
+
+// NetworkScannerView Accessibility
+"Accessibility: Scanning status" = "Scanning network";
+"Accessibility: Scanning progress" = "Scanning network for SMB services. This may take up to 30 seconds.";
+"Accessibility: Empty state" = "No SMB services found. Make sure your SMB servers are online and on the same network.";
+"Accessibility: Scan again button" = "Scan Again";
+"Accessibility: Scan again hint" = "Starts a new network scan for SMB services";
+"Accessibility: Services count" = "%d services found";
+"Accessibility: Services list" = "Discovered SMB services list";
+"Accessibility: IP label" = "IP address";
+"Accessibility: Shares label" = "Shares";
+"Accessibility: Service row hint" = "Double-tap to select this service";
+"Accessibility: Refresh button" = "Refresh";
+"Accessibility: Refresh hint" = "Starts a new network scan";
+"Accessibility: Scanning" = "Scanning in progress";
+"Accessibility: Select button" = "Select";
+"Accessibility: Select hint with service" = "Selects %@ and opens mount configuration";
+"Accessibility: Select hint no selection" = "Select a service from the list first";
+
+// PreferencesView Accessibility
+"Accessibility: Preferences header" = "Preferences";
+"Accessibility: Launch at login toggle" = "Launch at Login";
+"Accessibility: Launch at login hint" = "When enabled, LanMount will start automatically when you log in";
+"Accessibility: Updating" = "Updating launch at login setting";
+"Accessibility: Open settings button" = "Open Login Items Settings";
+"Accessibility: Open settings hint" = "Opens System Settings to approve login item";
+"Accessibility: Approval required" = "Launch at login requires approval in System Settings";
+"Accessibility: Auto-reconnect toggle" = "Auto-Reconnect";
+"Accessibility: Auto-reconnect hint" = "When enabled, disconnected mounts will be automatically reconnected";
+"Accessibility: Notifications toggle" = "Show Notifications";
+"Accessibility: Notifications hint" = "When enabled, notifications will be shown for mount events and errors";
+"Accessibility: Scan interval slider" = "Network Scan Interval";
+"Accessibility: Scan interval hint" = "Adjust how often to scan for network changes";
+"Accessibility: Preset button" = "Set scan interval to %@";
+"Accessibility: Presets group" = "Scan interval presets";
+"Accessibility: Log level picker" = "Log Level";
+"Accessibility: Log level hint" = "Select the level of detail for log messages";
+"Accessibility: Log level description" = "Log level description";
+"Accessibility: View logs button" = "View Logs";
+"Accessibility: View logs hint" = "Opens the logs folder in Finder";
+"Accessibility: Log location" = "Log files location";
+"Accessibility: Log size" = "Total log size: %@";
+"Accessibility: Reset button" = "Reset to Defaults";
+"Accessibility: Reset hint" = "Resets all settings to their default values";
+"Accessibility: Dismiss error button" = "Dismiss error";
+"Accessibility: Dismiss error hint" = "Dismisses this error message";
+
+// MenuBarController Accessibility
+"Accessibility: Add mount tooltip" = "Opens the mount configuration dialog to add a new SMB share";
+"Accessibility: Scan network tooltip" = "Scans the local network for available SMB services";
+"Accessibility: Preferences tooltip" = "Opens the application preferences";
+"Accessibility: Quit tooltip" = "Quits the LanMount application";
+"Accessibility: Mounted volumes count" = "%d mounted volumes";
+"Accessibility: Open in Finder tooltip" = "Opens %@ in Finder";
+"Accessibility: Unmount tooltip" = "Unmounts %@ from the system";
+"Accessibility: Volume info tooltip" = "Volume information";
+
+
+// MARK: - Bottom Navigation Bar
+
+// Tab Titles
+"Overview" = "Overview";
+"Disk Config" = "Disk Config";
+"Disk Info" = "Disk Info";
+"System Config" = "System Config";
+
+// Chart Labels
+"Storage Trend" = "Storage Trend";
+"IO History" = "IO History";
+"Health Status" = "Health Status";
+"Past 7 days" = "Past 7 days";
+"1 Minute" = "1 Minute";
+"5 Minutes" = "5 Minutes";
+"1 Hour" = "1 Hour";
+"Health Score" = "Health Score";
+"Latency" = "Latency";
+"Success Rate" = "Success Rate";
+
+// Badge and Status Labels
+"Excellent" = "Excellent";
+"Good" = "Good";
+"Fair" = "Fair";
+"Poor" = "Poor";
+
+// System Config Labels
+"General Settings" = "General Settings";
+"Notification Settings" = "Notification Settings";
+"Data Management" = "Data Management";
+"About" = "About";
+
+// Overview Tab
+"Quick Actions" = "Quick Actions";
+"Mount All" = "Mount All";
+"Unmount All" = "Unmount All";
+"Refresh Status" = "Refresh Status";
+"Storage Summary" = "Storage Summary";
+"IO Activity" = "IO Activity";
+"No Configurations" = "No Configurations";
+"Add your first SMB configuration to get started" = "Add your first SMB configuration to get started";
+
+// Disk Config Tab
+"Add Configuration" = "Add Configuration";
+"Edit Configuration" = "Edit Configuration";
+"Delete Configuration" = "Delete Configuration";
+"Scan for Shares" = "Scan for Shares";
+"Server" = "Server";
+"Share" = "Share";
+"Mount Status" = "Mount Status";
+"Mounted" = "Mounted";
+"Not Mounted" = "Not Mounted";
+
+// Disk Info Tab
+"Storage Overview" = "Storage Overview";
+"IO Performance" = "IO Performance";
+"Health Dashboard" = "Health Dashboard";
+"Volume Details" = "Volume Details";
+"Export Report" = "Export Report";
+"Used" = "Used";
+"Available" = "Available";
+"Total" = "Total";
+"Read Speed" = "Read Speed";
+"Write Speed" = "Write Speed";
+
+// System Config Tab
+"Launch at Login" = "Launch at Login";
+"Show in Menu Bar" = "Show in Menu Bar";
+"Auto-Mount on Network Change" = "Auto-Mount on Network Change";
+"Mount Notifications" = "Mount Notifications";
+"Error Notifications" = "Error Notifications";
+"Storage Warning Notifications" = "Storage Warning Notifications";
+"Export Data" = "Export Data";
+"Import Data" = "Import Data";
+"Version" = "Version";
+
+// Accessibility Labels - Bottom Navigation Bar
+"Accessibility: Tab bar" = "Bottom navigation bar";
+"Accessibility: Overview tab" = "Overview tab";
+"Accessibility: Disk config tab" = "Disk configuration tab";
+"Accessibility: Disk info tab" = "Disk information tab";
+"Accessibility: System config tab" = "System configuration tab";
+"Accessibility: Tab selected" = "Selected";
+"Accessibility: Tab badge count" = "%d notifications";
+"Accessibility: Tab badge dot" = "Has new notification";
+
+
+// MARK: - Additional Localization Strings
+
+// DashboardView
+"mounted" = "mounted";
+"configured" = "configured";
+"v1.0.0" = "v1.0.0";
+"Current" = "Current";
+"Average" = "Average";
+"Peak" = "Peak";
+
+// ConnectionManagerView
+"Connection Manager" = "Connection Manager";
+"Are you sure you want to delete %d configuration(s)? This action cannot be undone." = "Are you sure you want to delete %d configuration(s)? This action cannot be undone.";
+"Add SMB mount configurations to get started." = "Add SMB mount configurations to get started.";
+
+// MainTabView
+"Main Application View" = "Main Application View";
+"Overview Tab Content" = "Overview Tab Content";
+"Disk Configuration Tab Content" = "Disk Configuration Tab Content";
+"Disk Information Tab Content" = "Disk Information Tab Content";
+"System Configuration Tab Content" = "System Configuration Tab Content";
+"Please upgrade to macOS 13.0 or later for the full experience." = "Please upgrade to macOS 13.0 or later for the full experience.";
+"%d volumes mounted" = "%d volumes mounted";
+
+// OverviewTabView
+"Connections" = "Connections";
+"%d configured" = "%d configured";
+"Connection status grid with %d connections" = "Connection status grid with %d connections";
+"Double tap to view disk details" = "Double tap to view disk details";
+"Auto-mount enabled" = "Auto-mount enabled";
+"Storage" = "Storage";
+"Storage: %.1f percent used, %@ of %@" = "Storage: %.1f percent used, %@ of %@";
+"Summary" = "Summary";
+"Storage summary: %@ used of %@, %.1f percent" = "Storage summary: %@ used of %@, %.1f percent";
+"%d volumes" = "%d volumes";
+"IO activity: Read %@, Write %@" = "IO activity: Read %@, Write %@";
+"Live" = "Live";
+"Read" = "Read";
+"Write" = "Write";
+"%d active volumes" = "%d active volumes";
+"No active IO" = "No active IO";
+"No SMB connections configured. Add a connection to get started." = "No SMB connections configured. Add a connection to get started.";
+"No Connections" = "No Connections";
+"Add an SMB connection to start mounting network drives." = "Add an SMB connection to start mounting network drives.";
+"Add Connection" = "Add Connection";
+"connected" = "connected";
+"disconnected" = "disconnected";
+"%@ share %@ on server %@, %@" = "%@ share %@ on server %@, %@";
+
+// DiskConfigTabView
+"Disk Configurations" = "Disk Configurations";
+"%d configurations" = "%d configurations";
+"Scan network for available SMB shares" = "Scan network for available SMB shares";
+"Opens network scanner to discover SMB shares" = "Opens network scanner to discover SMB shares";
+"Opens form to add a new SMB configuration" = "Opens form to add a new SMB configuration";
+"Configuration list with %d items" = "Configuration list with %d items";
+"Add SMB mount configurations to connect to network drives." = "Add SMB mount configurations to connect to network drives.";
+"Add Manually" = "Add Manually";
+"No configurations. Add SMB mount configurations to connect to network drives." = "No configurations. Add SMB mount configurations to connect to network drives.";
+"Mount failed" = "Mount failed";
+"Auto" = "Auto";
+"Manual" = "Manual";
+"Sync" = "Sync";
+"Saved" = "Saved";
+"Success rate %.0f percent" = "Success rate %.0f percent";
+"Edit" = "Edit";
+"Opens form to edit this configuration" = "Opens form to edit this configuration";
+"Deletes this configuration" = "Deletes this configuration";
+"Mount" = "Mount";
+"Mount Drive" = "Mount Drive";
+"Mounts this network drive" = "Mounts this network drive";
+"Configuration for server %@, share %@" = "Configuration for server %@, share %@";
+"auto-mount enabled" = "auto-mount enabled";
+"sync enabled" = "sync enabled";
+"Double tap for options" = "Double tap for options";
+"Select Share" = "Select Share";
+"Server %@ has multiple shares. Select one to configure:" = "Server %@ has multiple shares. Select one to configure:";
+"Connected successfully (%.0fms)" = "Connected successfully (%.0fms)";
+"Connection failed" = "Connection failed";
+
+// DiskInfoTabView
+"Disk Information" = "Disk Information";
+"Storage Details" = "Storage Details";
+"IO Performance" = "IO Performance";
+"Health Status" = "Health Status";
+"No mounted volumes" = "No mounted volumes";
+"Mount some volumes to see storage information" = "Mount some volumes to see storage information";
+"Go to Disk Config" = "Go to Disk Config";
+
+// SystemConfigTabView
+"System Configuration" = "System Configuration";
+"Startup" = "Startup";
+"Start LanMount when you log in" = "Start LanMount when you log in";
+"Menu Bar" = "Menu Bar";
+"Show LanMount icon in menu bar" = "Show LanMount icon in menu bar";
+"Auto-Mount" = "Auto-Mount";
+"Automatically mount configured shares when network changes" = "Automatically mount configured shares when network changes";
+"Notifications" = "Notifications";
+"Show notifications when volumes are mounted or unmounted" = "Show notifications when volumes are mounted or unmounted";
+"Show notifications when errors occur" = "Show notifications when errors occur";
+"Show notifications when storage is running low" = "Show notifications when storage is running low";
+"Data" = "Data";
+"Export configurations and settings" = "Export configurations and settings";
+"Import configurations and settings" = "Import configurations and settings";
+"App Info" = "App Info";
+
+// QuickActionsPanel
+"Quick Actions" = "Quick Actions";
+"Mount All" = "Mount All";
+"Unmount All" = "Unmount All";
+"Refresh" = "Refresh";
+"Mounting all configured shares..." = "Mounting all configured shares...";
+"Unmounting all volumes..." = "Unmounting all volumes...";
+"Refreshing status..." = "Refreshing status...";
+
+// Window Titles
+"Add New Mount" = "Add New Mount";
+"LanMount Dashboard" = "LanMount Dashboard";
+
+// Menu Bar
+"Dashboard" = "Dashboard";
+
+
+// ConnectionManagerView additional strings
+"Delete Configurations" = "Delete Configurations";
+"An unknown error occurred." = "An unknown error occurred.";
+"Success" = "Success";
+"Operation completed successfully." = "Operation completed successfully.";
+"Import" = "Import";
+"Import configurations from a JSON file" = "Import configurations from a JSON file";
+"Import configurations" = "Import configurations";
+"Opens a file picker to select a JSON file containing configurations to import" = "Opens a file picker to select a JSON file containing configurations to import";
+"Export" = "Export";
+"A modern SMB mount manager for macOS" = "A modern SMB mount manager for macOS";
+
+
+// Language Settings
+"Language" = "Language";
+"System Default" = "System Default";
+"Restart required for language change to take full effect" = "Restart required for language change to take full effect";

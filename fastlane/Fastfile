@@ -1,0 +1,332 @@
+# Fastfile for LanMount
+# 自动化构建、签名、公证和发布流程
+
+default_platform(:mac)
+
+platform :mac do
+  
+  # 配置变量
+  APP_NAME = "LanMount"
+  SCHEME = "LanMount"
+  PROJECT = "LanMount.xcodeproj"
+  BUNDLE_ID = "com.lanmount.app"
+  
+  # 从 .env 文件加载环境变量
+  before_all do
+    # 确保 .env 文件存在
+    unless File.exist?("../.env")
+      UI.user_error!("❌ .env 文件不存在！请复制 .env.example 并配置。")
+    end
+    
+    # 加载环境变量
+    Dotenv.load("../.env")
+    
+    # 验证必需的环境变量
+    required_vars = ["APPLE_ID", "TEAM_ID", "APP_SPECIFIC_PASSWORD"]
+    missing_vars = required_vars.select { |var| ENV[var].nil? || ENV[var].empty? }
+    
+    unless missing_vars.empty?
+      UI.user_error!("❌ 缺少必需的环境变量: #{missing_vars.join(', ')}")
+    end
+    
+    UI.success("✅ 环境变量加载完成")
+  end
+  
+  # ==========================================
+  # Lane: 完整发布流程
+  # ==========================================
+  desc "完整的发布流程：构建、签名、公证、创建 DMG"
+  lane :release do |options|
+    version = options[:version] || prompt(text: "请输入版本号 (例如: 1.0.0): ")
+    
+    UI.header("🚀 开始发布 LanMount v#{version}")
+    
+    # 1. 运行测试（可选）
+    unless options[:skip_tests]
+      UI.message("📝 运行测试...")
+      begin
+        run_tests(
+          scheme: SCHEME,
+          destination: "platform=macOS"
+        )
+        UI.success("✅ 测试通过")
+      rescue => ex
+        UI.important("⚠️  测试失败，但继续构建")
+      end
+    end
+    
+    # 2. 更新版本号（可选）
+    unless options[:skip_version_bump]
+      UI.message("📝 更新版本号...")
+      update_version(version: version)
+      update_build_number(build: Time.now.strftime("%Y%m%d%H%M"))
+    end
+    
+    # 3. 构建应用
+    build_app_release
+    
+    # 4. 创建 DMG
+    dmg_path = create_dmg(version: version)
+    
+    # 5. 公证
+    unless options[:skip_notarize]
+      notarize_dmg(dmg_path: dmg_path)
+    else
+      UI.important("⚠️  跳过公证")
+    end
+    
+    # 6. 完成
+    UI.success("🎉 发布完成！")
+    UI.success("📦 DMG: #{dmg_path}")
+  end
+  
+  # ==========================================
+  # Lane: 仅构建应用
+  # ==========================================
+  desc "构建 Release 版本的应用"
+  lane :build_app_release do
+    UI.header("🔨 构建应用")
+    
+    # 清理构建目录
+    sh("rm", "-rf", "../build")
+    sh("mkdir", "-p", "../build/Release")
+    
+    # 使用 xcodebuild 直接构建
+    Dir.chdir("..") do
+      sh(
+        "xcodebuild",
+        "-scheme", SCHEME,
+        "-project", PROJECT,
+        "-configuration", "Release",
+        "-derivedDataPath", "build/DerivedData",
+        "clean", "build",
+        "CODE_SIGN_IDENTITY="
+      )
+      
+      # 复制 app 到输出目录
+      app_source = "build/DerivedData/Build/Products/Release/#{APP_NAME}.app"
+      app_dest = "build/Release/#{APP_NAME}.app"
+      
+      if File.exist?(app_source)
+        sh("cp", "-R", app_source, app_dest)
+        UI.success("✅ 应用已复制到: #{app_dest}")
+      else
+        UI.user_error!("❌ 构建的应用不存在: #{app_source}")
+      end
+    end
+    
+    UI.success("✅ 构建完成")
+  end
+  
+  # ==========================================
+  # Lane: 创建 DMG
+  # ==========================================
+  desc "创建 DMG 安装包"
+  lane :create_dmg do |options|
+    UI.header("📦 创建 DMG")
+    
+    version = options[:version] || "1.0.0"
+    app_path = "../build/Release/#{APP_NAME}.app"
+    dmg_path = "../build/#{APP_NAME}-#{version}.dmg"
+    
+    # 验证应用存在
+    unless File.exist?(app_path)
+      UI.user_error!("❌ 应用不存在: #{app_path}")
+    end
+    
+    # 删除旧的 DMG
+    if File.exist?(dmg_path)
+      UI.message("删除旧的 DMG...")
+      sh("rm", "-f", dmg_path)
+    end
+    
+    # 使用 hdiutil 创建 DMG
+    UI.message("创建 DMG...")
+    sh(
+      "hdiutil",
+      "create",
+      "-volname", APP_NAME,
+      "-srcfolder", app_path,
+      "-ov",
+      "-format", "UDZO",
+      dmg_path
+    )
+    
+    UI.success("✅ DMG 创建完成: #{dmg_path}")
+    dmg_path
+  end
+  
+  # ==========================================
+  # Lane: 公证 DMG
+  # ==========================================
+  desc "公证 DMG 文件"
+  lane :notarize_dmg do |options|
+    UI.header("🔐 公证 DMG")
+    
+    dmg_path = options[:dmg_path]
+    
+    # 转换为绝对路径
+    absolute_dmg_path = File.expand_path(dmg_path)
+    
+    unless File.exist?(absolute_dmg_path)
+      UI.user_error!("❌ DMG 不存在: #{absolute_dmg_path}")
+    end
+    
+    # 使用 notarytool 公证
+    UI.message("提交公证请求...")
+    UI.message("DMG 路径: #{absolute_dmg_path}")
+    
+    # 使用 xcrun notarytool 直接公证
+    Dir.chdir("..") do
+      sh(
+        "xcrun",
+        "notarytool",
+        "submit",
+        absolute_dmg_path,
+        "--apple-id", ENV["APPLE_ID"],
+        "--team-id", ENV["TEAM_ID"],
+        "--password", ENV["APP_SPECIFIC_PASSWORD"],
+        "--wait"
+      )
+    end
+    
+    # 装订公证票据
+    UI.message("装订公证票据...")
+    sh("xcrun", "stapler", "staple", absolute_dmg_path)
+    
+    # 验证
+    UI.message("验证公证...")
+    sh("xcrun", "stapler", "validate", absolute_dmg_path)
+    
+    UI.success("✅ 公证完成")
+  end
+  
+  # ==========================================
+  # Lane: 仅公证（用于已有的 DMG）
+  # ==========================================
+  desc "公证已存在的 DMG 文件"
+  lane :notarize_only do |options|
+    dmg_path = options[:dmg]
+    
+    unless dmg_path
+      UI.user_error!("❌ 请提供 DMG 路径: fastlane notarize_only dmg:path/to/file.dmg")
+    end
+    
+    # 转换为绝对路径
+    absolute_dmg_path = File.expand_path(dmg_path, "..")
+    
+    notarize_dmg(dmg_path: absolute_dmg_path)
+  end
+  
+  # ==========================================
+  # Lane: 测试构建（不公证）
+  # ==========================================
+  desc "测试构建（跳过公证）"
+  lane :test_build do |options|
+    version = options[:version] || "test"
+    
+    release(
+      version: version,
+      skip_tests: true,
+      skip_notarize: true
+    )
+  end
+  
+  # ==========================================
+  # Lane: 清理构建文件
+  # ==========================================
+  desc "清理构建文件和缓存"
+  lane :clean do
+    UI.header("🧹 清理构建文件")
+    
+    # 清理构建目录
+    sh("rm", "-rf", "../build")
+    
+    # 清理 Xcode 缓存
+    sh("rm", "-rf", "~/Library/Developer/Xcode/DerivedData")
+    
+    # 运行清理脚本
+    sh("../Scripts/cleanup-dmg.sh")
+    
+    UI.success("✅ 清理完成")
+  end
+  
+  # ==========================================
+  # Lane: 验证配置
+  # ==========================================
+  desc "验证 Fastlane 配置"
+  lane :validate do
+    UI.header("🔍 验证配置")
+    
+    # 检查环境变量
+    UI.message("检查环境变量...")
+    required_vars = ["APPLE_ID", "TEAM_ID", "APP_SPECIFIC_PASSWORD"]
+    required_vars.each do |var|
+      if ENV[var].nil? || ENV[var].empty?
+        UI.error("❌ 缺少: #{var}")
+      else
+        UI.success("✅ #{var}: #{ENV[var][0..10]}...")
+      end
+    end
+    
+    # 检查证书
+    UI.message("检查代码签名证书...")
+    begin
+      sh("security", "find-identity", "-v", "-p", "codesigning")
+      UI.success("✅ 找到代码签名证书")
+    rescue
+      UI.error("❌ 未找到代码签名证书")
+    end
+    
+    # 检查项目文件
+    UI.message("检查项目文件...")
+    if File.exist?("../#{PROJECT}")
+      UI.success("✅ 项目文件存在")
+    else
+      UI.error("❌ 项目文件不存在")
+    end
+    
+    UI.success("✅ 验证完成")
+  end
+  
+  # ==========================================
+  # 错误处理
+  # ==========================================
+  error do |lane, exception|
+    UI.error("❌ Lane #{lane} 失败")
+    UI.error("错误: #{exception.message}")
+  end
+  
+  # ==========================================
+  # 辅助方法
+  # ==========================================
+  
+  # 更新版本号
+  private_lane :update_version do |options|
+    version = options[:version]
+    
+    Dir.chdir("..") do
+      sh(
+        "xcrun",
+        "agvtool",
+        "new-marketing-version",
+        version
+      )
+    end
+  end
+  
+  # 更新构建号
+  private_lane :update_build_number do |options|
+    build = options[:build]
+    
+    Dir.chdir("..") do
+      sh(
+        "xcrun",
+        "agvtool",
+        "new-version",
+        "-all",
+        build
+      )
+    end
+  end
+end
