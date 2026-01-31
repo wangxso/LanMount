@@ -1,7 +1,7 @@
 # LanMount
 
 <p align="center">
-  <img src="docs/images/app-icon.png" alt="LanMount Icon" width="128" height="128">
+  <img src="./LanMount.png" alt="LanMount Icon" width="128" height="128">
 </p>
 
 <p align="center">
