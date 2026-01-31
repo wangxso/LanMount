@@ -1,5 +1,7 @@
 # GitHub Actions 自动发布配置指南
 
+> 📍 **注意：** 这是 GitHub Actions 的配置文档。项目主文档请查看 [../README.md](../README.md)
+
 本文档说明如何配置 GitHub Actions 以实现自动构建、签名、公证和发布 LanMount。
 
 ## 📋 前提条件
