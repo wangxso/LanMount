@@ -99,16 +99,17 @@ jobs:
           xcodebuild -version
 
       # ----------------------------------------------------------------------
-      # Install Fastlane
+      # Install Fastlane (only for signed builds)
       # ----------------------------------------------------------------------
       - name: Setup Ruby
+        if: github.event.inputs.skip_signing != 'true'
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
           bundler-cache: true
-          working-directory: LanMount
 
       - name: Install Fastlane
+        if: github.event.inputs.skip_signing != 'true'
         run: |
           bundle install
           bundle exec fastlane --version
