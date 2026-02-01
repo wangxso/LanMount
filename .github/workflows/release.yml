@@ -111,9 +111,19 @@ jobs:
       - name: Install Fastlane dependencies
         if: github.event.inputs.skip_signing != 'true'
         run: |
+          # Remove Gemfile.lock to avoid bundler version conflicts
+          rm -f Gemfile.lock
+          
+          # Install latest bundler
           gem install bundler
+          
+          # Configure bundle
           bundle config set --local path 'vendor/bundle'
+          
+          # Install dependencies
           bundle install --jobs 4 --retry 3
+          
+          # Verify installation
           bundle exec fastlane --version
 
       # ----------------------------------------------------------------------

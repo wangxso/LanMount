@@ -89,6 +89,7 @@ fastlane/.env.default
 vendor/bundle
 .bundle
 !.bundle/config
+Gemfile.lock
 
 # Code Injection
 #
