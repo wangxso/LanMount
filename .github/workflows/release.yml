@@ -192,7 +192,7 @@ jobs:
           ls -lh "$DMG_PATH"
 
       # ----------------------------------------------------------------------
-      # Calculate SHA256 for Homebrew
+      # Calculate DMG SHA256
       # ----------------------------------------------------------------------
       - name: Calculate DMG SHA256
         id: sha256
@@ -233,14 +233,10 @@ jobs:
           - ✅ Hardened Runtime enabled
           
           ### Installation
-          1. Download the DMG file
-          2. Open the DMG and drag LanMount to Applications
+          1. Download the DMG file below
+          2. Open the DMG and drag LanMount to Applications folder
           3. Launch LanMount from Applications
-          
-          ### Homebrew
-          \`\`\`bash
-          brew install --cask lanmount
-          \`\`\`
+          4. Grant necessary permissions when prompted
           
           **SHA256:** \`${{ steps.sha256.outputs.sha256 }}\`
           
@@ -267,58 +263,6 @@ jobs:
             LanMount/build/${{ env.APP_NAME }}-${{ steps.version.outputs.version }}.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # ----------------------------------------------------------------------
-      # Update Homebrew Cask (Optional)
-      # ----------------------------------------------------------------------
-      - name: Update Homebrew Cask
-        if: ${{ secrets.HOMEBREW_TAP_TOKEN != '' && github.event.inputs.skip_notarization != 'true' }}
-        env:
-          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-        run: |
-          VERSION="${{ steps.version.outputs.version }}"
-          SHA256="${{ steps.sha256.outputs.sha256 }}"
-          
-          echo "Updating Homebrew Cask..."
-          echo "Version: $VERSION"
-          echo "SHA256: $SHA256"
-          
-          # Clone your homebrew tap repository
-          git clone https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/${{ github.repository_owner }}/homebrew-lanmount.git
-          cd homebrew-lanmount
-          
-          # Update the cask formula
-          cat > Casks/lanmount.rb << EOF
-          cask "lanmount" do
-            version "$VERSION"
-            sha256 "$SHA256"
-          
-            url "https://github.com/${{ github.repository }}/releases/download/v#{version}/LanMount-#{version}.dmg"
-            name "LanMount"
-            desc "macOS SMB network share mounter"
-            homepage "https://github.com/${{ github.repository }}"
-          
-            livecheck do
-              url :url
-              strategy :github_latest
-            end
-          
-            app "LanMount.app"
-          
-            zap trash: [
-              "~/Library/Application Support/LanMount",
-              "~/Library/Caches/com.lanmount.app",
-              "~/Library/Preferences/com.lanmount.app.plist",
-            ]
-          end
-          EOF
-          
-          # Commit and push
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Casks/lanmount.rb
-          git commit -m "Update LanMount to v$VERSION"
-          git push
 
       # ----------------------------------------------------------------------
       # Cleanup
@@ -354,10 +298,6 @@ jobs:
           echo "| Notarized | $NOTARIZED |" >> $GITHUB_STEP_SUMMARY
           echo "| Pre-release | ${{ github.event.inputs.prerelease == 'true' }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📦 Downloads" >> $GITHUB_STEP_SUMMARY
+          echo "### 📦 Download" >> $GITHUB_STEP_SUMMARY
           echo "- [LanMount-$VERSION.dmg](https://github.com/${{ github.repository }}/releases/download/v$VERSION/LanMount-$VERSION.dmg)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🍺 Homebrew" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "brew install --cask lanmount" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
