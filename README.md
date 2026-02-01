@@ -1,7 +1,7 @@
 # LanMount
 
 <p align="center">
-  <img src="./LanMount.png" alt="LanMount Icon" width="128" height="128">
+  <img src="imgs/icon-128.png" alt="LanMount Icon" width="128" height="128">
 </p>
 
 <p align="center">
@@ -65,6 +65,48 @@ Whether you're connecting to a NAS device, a Windows file server, or another Mac
 - **Native Experience**: Works just like local drives
 - **Custom Icons**: Easy identification of network shares
 - **Right-Click Eject**: Unmount directly from Finder
+
+## Screenshots
+
+### Dashboard - 主界面
+<p align="center">
+  <img src="imgs/screenshots/dashboard.png" alt="Dashboard" width="100%">
+</p>
+
+主界面提供一目了然的连接状态和快速操作面板。
+
+### Disk Info - 磁盘信息
+<p align="center">
+  <img src="imgs/screenshots/diskinfo.png" alt="Disk Info" width="100%">
+</p>
+
+实时监控存储使用情况，包括容量、使用率和趋势图表。
+
+### Disk Configuration - 磁盘配置
+<p align="center">
+  <img src="imgs/screenshots/diskconfig.png" alt="Disk Configuration" width="100%">
+</p>
+
+管理所有 SMB 连接配置，支持自动挂载和自定义设置。
+
+### System Configuration - 系统配置
+<p align="center">
+  <img src="imgs/screenshots/config.png" alt="System Configuration" width="100%">
+</p>
+
+自定义应用设置，包括语言、启动选项和通知偏好。
+
+<details>
+<summary>更多截图</summary>
+
+### Add Disk - 添加磁盘
+<p align="center">
+  <img src="imgs/screenshots/adddisk.png" alt="Add Disk" width="100%">
+</p>
+
+简单易用的配置向导，快速添加新的 SMB 连接。
+
+</details>
 
 ## System Requirements
 
@@ -315,13 +357,13 @@ fastlane test_build version:1.0.0
 fastlane release version:1.0.0
 ```
 
-详见 [Fastlane 指南](FASTLANE_GUIDE.md)
+详见 [Fastlane 指南](docs/FASTLANE_GUIDE.md)
 
 ## 📚 开发文档
 
-- [快速开始](QUICK_START.md) - 快速构建和发布指南
-- [Fastlane 指南](FASTLANE_GUIDE.md) - 使用 Fastlane 自动化发布
+- [快速开始](docs/QUICK_START.md) - 快速构建和发布指南
+- [Fastlane 指南](docs/FASTLANE_GUIDE.md) - 使用 Fastlane 自动化发布
 - [GitHub Actions 配置](.github/GITHUB_ACTIONS_SETUP.md) - 配置自动发布
-- [代码签名指南](CODE_SIGNING.md) - 代码签名和公证
-- [发布指南](RELEASE_GUIDE.md) - 详细发布流程
-- [故障排除](TROUBLESHOOTING.md) - 常见问题解决
+- [代码签名指南](docs/CODE_SIGNING.md) - 代码签名和公证
+- [发布指南](docs/RELEASE_GUIDE.md) - 详细发布流程
+- [故障排除](docs/TROUBLESHOOTING.md) - 常见问题解决

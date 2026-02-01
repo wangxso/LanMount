@@ -141,7 +141,7 @@ git push origin v1.0.0
 
 ## 📚 相关文档
 
-- [GitHub Actions 配置指南](.github/GITHUB_ACTIONS_SETUP.md) - 详细配置步骤
+- [GitHub Actions 配置指南](../.github/GITHUB_ACTIONS_SETUP.md) - 详细配置步骤
 - [Fastlane 指南](FASTLANE_GUIDE.md) - Fastlane 使用说明
 - [快速开始](QUICK_START.md) - 快速构建指南
 - [代码签名指南](CODE_SIGNING.md) - 签名和公证说明

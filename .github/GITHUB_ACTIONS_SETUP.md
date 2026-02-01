@@ -223,10 +223,10 @@ Workflow 文件位置：`.github/workflows/release.yml`
 
 ## 📚 相关文档
 
-- [Fastlane 指南](../FASTLANE_GUIDE.md)
-- [快速开始](../QUICK_START.md)
-- [代码签名指南](../CODE_SIGNING.md)
-- [发布指南](../RELEASE_GUIDE.md)
+- [Fastlane 指南](../docs/FASTLANE_GUIDE.md)
+- [快速开始](../docs/QUICK_START.md)
+- [代码签名指南](../docs/CODE_SIGNING.md)
+- [发布指南](../docs/RELEASE_GUIDE.md)
 
 ## 🎉 完成！
 
