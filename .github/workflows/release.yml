@@ -1,22 +1,28 @@
 # GitHub Actions workflow for automated LanMount releases
 #
-# This workflow uses Fastlane to:
-# 1. Build the app in Release configuration
-# 2. Sign the app with Developer ID certificate
-# 3. Create a DMG installer
-# 4. Notarize the DMG with Apple
-# 5. Create a GitHub Release with the DMG attached
+# This workflow supports three build modes:
+# 1. Full signed + notarized (default): Code signed and notarized by Apple
+# 2. Signed only: Code signed but skip notarization (skip_notarization=true)
+# 3. Unsigned: No signing or notarization (skip_signing=true) - anyone can install
+#
+# Build Process:
+# - Signed builds use Fastlane for building, signing, and notarization
+# - Unsigned builds use xcodebuild directly without any code signing
+# - All builds create a DMG installer
+# - All builds create a GitHub Release with the DMG attached
 #
 # Triggers:
-# - Manual dispatch with version input
-# - Push of version tags (v*)
+# - Manual dispatch with version input and build options
+# - Push of version tags (v*) - defaults to full signed + notarized
 #
-# Required Secrets:
+# Required Secrets (only for signed builds):
 # - APPLE_DEVELOPER_CERTIFICATE_P12_BASE64: Base64-encoded .p12 certificate
 # - APPLE_DEVELOPER_CERTIFICATE_PASSWORD: Password for the .p12 certificate
 # - APPLE_ID: Apple ID email for notarization
 # - APPLE_TEAM_ID: Apple Developer Team ID (10-character string)
 # - APPLE_APP_SPECIFIC_PASSWORD: App-specific password for notarization
+#
+# Last updated: 2026-02-01
 
 name: Release
 
@@ -33,8 +39,13 @@ on:
         required: false
         type: boolean
         default: false
+      skip_signing:
+        description: 'Skip code signing and notarization (unsigned DMG)'
+        required: false
+        type: boolean
+        default: false
       skip_notarization:
-        description: 'Skip notarization (for testing)'
+        description: 'Skip notarization only (signed but not notarized)'
         required: false
         type: boolean
         default: false
@@ -99,14 +110,14 @@ jobs:
 
       - name: Install Fastlane
         run: |
-          cd LanMount
           bundle install
           bundle exec fastlane --version
 
       # ----------------------------------------------------------------------
-      # Certificate Setup
+      # Certificate Setup (skip if building unsigned)
       # ----------------------------------------------------------------------
       - name: Install Apple Developer Certificate
+        if: github.event.inputs.skip_signing != 'true'
         env:
           CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
           CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
@@ -143,15 +154,15 @@ jobs:
           security find-identity -v -p codesigning "$KEYCHAIN_PATH"
 
       # ----------------------------------------------------------------------
-      # Create .env file for Fastlane
+      # Create .env file for Fastlane (skip if building unsigned)
       # ----------------------------------------------------------------------
       - name: Create Fastlane environment file
+        if: github.event.inputs.skip_signing != 'true'
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
         run: |
-          cd LanMount
           cat > .env << EOF
           APPLE_ID=$APPLE_ID
           TEAM_ID=$APPLE_TEAM_ID
@@ -163,11 +174,11 @@ jobs:
           echo "Fastlane .env file created"
 
       # ----------------------------------------------------------------------
-      # Build with Fastlane
+      # Build with Fastlane or direct build for unsigned
       # ----------------------------------------------------------------------
       - name: Build and package with Fastlane
+        if: github.event.inputs.skip_signing != 'true'
         run: |
-          cd LanMount
           VERSION="${{ steps.version.outputs.version }}"
           
           if [ "${{ github.event.inputs.skip_notarization }}" = "true" ]; then
@@ -178,10 +189,74 @@ jobs:
             bundle exec fastlane release version:$VERSION
           fi
 
+      - name: Build unsigned DMG
+        if: github.event.inputs.skip_signing == 'true'
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          
+          echo "Building unsigned DMG..."
+          
+          # Build the app without signing
+          xcodebuild \
+            -project LanMount.xcodeproj \
+            -scheme LanMount \
+            -configuration Release \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            clean build
+          
+          # Create build directory
+          mkdir -p build
+          
+          # Find the built app
+          APP_PATH="build/DerivedData/Build/Products/Release/${{ env.APP_NAME }}.app"
+          
+          if [ ! -d "$APP_PATH" ]; then
+            echo "Error: App not found at $APP_PATH"
+            exit 1
+          fi
+          
+          # Create DMG using hdiutil
+          DMG_PATH="build/${{ env.APP_NAME }}-$VERSION.dmg"
+          TEMP_DMG="build/temp.dmg"
+          VOLUME_NAME="${{ env.APP_NAME }}"
+          
+          # Create temporary DMG
+          hdiutil create -size 200m -fs HFS+ -volname "$VOLUME_NAME" "$TEMP_DMG"
+          
+          # Mount it
+          MOUNT_DIR=$(hdiutil attach "$TEMP_DMG" | grep Volumes | awk '{print $3}')
+          
+          # Copy app to DMG
+          cp -R "$APP_PATH" "$MOUNT_DIR/"
+          
+          # Create Applications symlink
+          ln -s /Applications "$MOUNT_DIR/Applications"
+          
+          # Unmount
+          hdiutil detach "$MOUNT_DIR"
+          
+          # Convert to compressed DMG
+          hdiutil convert "$TEMP_DMG" -format UDZO -o "$DMG_PATH"
+          
+          # Cleanup
+          rm "$TEMP_DMG"
+          
+          echo "Unsigned DMG created at $DMG_PATH"
+          ls -lh "$DMG_PATH"
+
       - name: Verify build output
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          DMG_PATH="LanMount/build/${{ env.APP_NAME }}-$VERSION.dmg"
+          
+          # Check in both possible locations
+          if [ "${{ github.event.inputs.skip_signing }}" = "true" ]; then
+            DMG_PATH="build/${{ env.APP_NAME }}-$VERSION.dmg"
+          else
+            DMG_PATH="LanMount/build/${{ env.APP_NAME }}-$VERSION.dmg"
+          fi
           
           if [ ! -f "$DMG_PATH" ]; then
             echo "Error: DMG not found at $DMG_PATH"
@@ -198,7 +273,13 @@ jobs:
         id: sha256
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          DMG_PATH="LanMount/build/${{ env.APP_NAME }}-$VERSION.dmg"
+          
+          # Check in both possible locations
+          if [ "${{ github.event.inputs.skip_signing }}" = "true" ]; then
+            DMG_PATH="build/${{ env.APP_NAME }}-$VERSION.dmg"
+          else
+            DMG_PATH="LanMount/build/${{ env.APP_NAME }}-$VERSION.dmg"
+          fi
           
           SHA256=$(shasum -a 256 "$DMG_PATH" | awk '{print $1}')
           echo "sha256=$SHA256" >> $GITHUB_OUTPUT
@@ -211,7 +292,8 @@ jobs:
         id: release_notes
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          NOTARIZED="${{ github.event.inputs.skip_notarization != 'true' }}"
+          SKIP_SIGNING="${{ github.event.inputs.skip_signing == 'true' }}"
+          NOTARIZED="${{ github.event.inputs.skip_notarization != 'true' && github.event.inputs.skip_signing != 'true' }}"
           
           # Create release notes
           cat > release_notes.md << EOF
@@ -228,15 +310,30 @@ jobs:
           - Apple Silicon (M1/M2/M3/M4) or Intel processor
           
           ### Security
-          - ✅ Code signed with Apple Developer ID
-          - $([ "$NOTARIZED" = "true" ] && echo "✅ Notarized by Apple" || echo "⚠️ Not notarized (test build)")
-          - ✅ Hardened Runtime enabled
+          $(if [ "$SKIP_SIGNING" = "true" ]; then
+            echo "- ⚠️ **Unsigned build** - Not code signed or notarized"
+            echo "- ⚠️ This build can be installed by anyone without security verification"
+            echo "- ⚠️ macOS Gatekeeper will show warnings - Right-click and select 'Open' to bypass"
+          else
+            echo "- ✅ Code signed with Apple Developer ID"
+            if [ "$NOTARIZED" = "true" ]; then
+              echo "- ✅ Notarized by Apple"
+            else
+              echo "- ⚠️ Not notarized (test build)"
+            fi
+            echo "- ✅ Hardened Runtime enabled"
+          fi)
           
           ### Installation
           1. Download the DMG file below
           2. Open the DMG and drag LanMount to Applications folder
           3. Launch LanMount from Applications
-          4. Grant necessary permissions when prompted
+          $(if [ "$SKIP_SIGNING" = "true" ]; then
+            echo "4. **First launch:** Right-click the app and select 'Open' to bypass Gatekeeper"
+            echo "5. Grant necessary permissions when prompted"
+          else
+            echo "4. Grant necessary permissions when prompted"
+          fi)
           
           **SHA256:** \`${{ steps.sha256.outputs.sha256 }}\`
           
@@ -260,7 +357,7 @@ jobs:
           draft: false
           prerelease: ${{ github.event.inputs.prerelease == 'true' }}
           files: |
-            LanMount/build/${{ env.APP_NAME }}-${{ steps.version.outputs.version }}.dmg
+            ${{ github.event.inputs.skip_signing == 'true' && 'build' || 'LanMount/build' }}/${{ env.APP_NAME }}-${{ steps.version.outputs.version }}.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -271,12 +368,14 @@ jobs:
         if: always()
         run: |
           # Remove .env file
-          rm -f LanMount/.env
+          rm -f .env
           
-          # Remove keychain
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-          if [ -f "$KEYCHAIN_PATH" ]; then
-            security delete-keychain "$KEYCHAIN_PATH" || true
+          # Remove keychain (only if it was created)
+          if [ "${{ github.event.inputs.skip_signing }}" != "true" ]; then
+            KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+            if [ -f "$KEYCHAIN_PATH" ]; then
+              security delete-keychain "$KEYCHAIN_PATH" || true
+            fi
           fi
 
       # ----------------------------------------------------------------------
@@ -286,7 +385,8 @@ jobs:
         if: success()
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          NOTARIZED="${{ github.event.inputs.skip_notarization != 'true' }}"
+          SKIP_SIGNING="${{ github.event.inputs.skip_signing == 'true' }}"
+          NOTARIZED="${{ github.event.inputs.skip_notarization != 'true' && github.event.inputs.skip_signing != 'true' }}"
           
           echo "## 🎉 Release Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -295,9 +395,17 @@ jobs:
           echo "| Version | $VERSION |" >> $GITHUB_STEP_SUMMARY
           echo "| Tag | v$VERSION |" >> $GITHUB_STEP_SUMMARY
           echo "| SHA256 | \`${{ steps.sha256.outputs.sha256 }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Notarized | $NOTARIZED |" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Signed | $( [ "$SKIP_SIGNING" = "true" ] && echo "❌ No" || echo "✅ Yes" ) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Notarized | $( [ "$NOTARIZED" = "true" ] && echo "✅ Yes" || echo "❌ No" ) |" >> $GITHUB_STEP_SUMMARY
           echo "| Pre-release | ${{ github.event.inputs.prerelease == 'true' }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "$SKIP_SIGNING" = "true" ]; then
+            echo "### ⚠️ Unsigned Build" >> $GITHUB_STEP_SUMMARY
+            echo "This is an unsigned build that can be installed by anyone without security verification." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
+          
           echo "### 📦 Download" >> $GITHUB_STEP_SUMMARY
           echo "- [LanMount-$VERSION.dmg](https://github.com/${{ github.repository }}/releases/download/v$VERSION/LanMount-$VERSION.dmg)" >> $GITHUB_STEP_SUMMARY
 
