@@ -22,6 +22,14 @@
 # - APPLE_TEAM_ID: Apple Developer Team ID (10-character string)
 # - APPLE_APP_SPECIFIC_PASSWORD: App-specific password for notarization
 #
+# Quick Start for Unsigned Builds:
+# 1. Go to Actions tab
+# 2. Select "Release" workflow
+# 3. Click "Run workflow"
+# 4. Enter version (e.g., 1.0.0)
+# 5. Check "Skip code signing and notarization"
+# 6. Click "Run workflow"
+#
 # Last updated: 2026-02-01
 
 name: Release
@@ -135,6 +143,14 @@ jobs:
           CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
           CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
         run: |
+          # Verify secrets are available
+          if [ -z "$CERTIFICATE_P12_BASE64" ] || [ -z "$CERTIFICATE_PASSWORD" ]; then
+            echo "Error: Certificate secrets are not configured"
+            echo "Please set APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 and APPLE_DEVELOPER_CERTIFICATE_PASSWORD in GitHub Secrets"
+            echo "Or use skip_signing=true to build unsigned DMG"
+            exit 1
+          fi
+          
           # Create temporary keychain
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
           KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
@@ -147,6 +163,12 @@ jobs:
           # Import certificate
           CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
           echo -n "$CERTIFICATE_P12_BASE64" | base64 --decode > "$CERTIFICATE_PATH"
+          
+          # Check if certificate file was created successfully
+          if [ ! -f "$CERTIFICATE_PATH" ] || [ ! -s "$CERTIFICATE_PATH" ]; then
+            echo "Error: Failed to decode certificate"
+            exit 1
+          fi
           
           security import "$CERTIFICATE_PATH" \
             -P "$CERTIFICATE_PASSWORD" \
