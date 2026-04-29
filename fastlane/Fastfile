@@ -89,15 +89,11 @@ platform :mac do
       "-project", PROJECT,
       "-configuration", "Release",
       "-derivedDataPath", "build/DerivedData",
-      "clean", "build"
+      "clean", "build",
+      "CODE_SIGN_IDENTITY=",
+      "CODE_SIGNING_REQUIRED=NO",
+      "CODE_SIGNING_ALLOWED=NO"
     ]
-
-    # 如果不签名，禁用代码签名
-    if options[:skip_signing]
-      build_args << "CODE_SIGN_IDENTITY="
-      build_args << "CODE_SIGNING_REQUIRED=NO"
-      build_args << "CODE_SIGNING_ALLOWED=NO"
-    end
 
     # 使用 xcodebuild 直接构建
     Dir.chdir("..") do
