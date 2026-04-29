@@ -227,12 +227,15 @@ jobs:
           BUNDLE_ID=com.lanmount.app
           EOF
 
+          # Add team ID for code signing (needed for both signing and notarization)
+          if [ -n "$APPLE_TEAM_ID" ]; then
+            echo "TEAM_ID=$APPLE_TEAM_ID" >> .env
+            echo "DEVELOPMENT_TEAM=$APPLE_TEAM_ID" >> .env
+          fi
+
           # Only add notarization secrets if available
           if [ -n "$APPLE_ID" ]; then
             echo "APPLE_ID=$APPLE_ID" >> .env
-          fi
-          if [ -n "$APPLE_TEAM_ID" ]; then
-            echo "TEAM_ID=$APPLE_TEAM_ID" >> .env
           fi
           if [ -n "$APPLE_APP_SPECIFIC_PASSWORD" ]; then
             echo "APP_SPECIFIC_PASSWORD=$APPLE_APP_SPECIFIC_PASSWORD" >> .env

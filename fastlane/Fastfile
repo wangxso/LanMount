@@ -76,24 +76,40 @@ platform :mac do
   # Lane: 仅构建应用
   # ==========================================
   desc "构建 Release 版本的应用"
-  lane :build_app_release do
+  lane :build_app_release do |options|
     UI.header("🔨 构建应用")
-    
+
     # 清理构建目录
     sh("rm", "-rf", "../build")
     sh("mkdir", "-p", "../build/Release")
-    
+
+    # 构建参数
+    build_args = [
+      "-scheme", SCHEME,
+      "-project", PROJECT,
+      "-configuration", "Release",
+      "-derivedDataPath", "build/DerivedData",
+      "clean", "build"
+    ]
+
+    # 如果不签名，禁用代码签名
+    if options[:skip_signing]
+      build_args << "CODE_SIGN_IDENTITY="
+      build_args << "CODE_SIGNING_REQUIRED=NO"
+      build_args << "CODE_SIGNING_ALLOWED=NO"
+    else
+      # 签名构建：设置签名身份和开发团队
+      if ENV["CODE_SIGN_IDENTITY"] && !ENV["CODE_SIGN_IDENTITY"].empty?
+        build_args << "CODE_SIGN_IDENTITY=#{ENV["CODE_SIGN_IDENTITY"]}"
+      end
+      if ENV["DEVELOPMENT_TEAM"] && !ENV["DEVELOPMENT_TEAM"].empty?
+        build_args << "DEVELOPMENT_TEAM=#{ENV["DEVELOPMENT_TEAM"]}"
+      end
+    end
+
     # 使用 xcodebuild 直接构建
     Dir.chdir("..") do
-      sh(
-        "xcodebuild",
-        "-scheme", SCHEME,
-        "-project", PROJECT,
-        "-configuration", "Release",
-        "-derivedDataPath", "build/DerivedData",
-        "clean", "build",
-        "CODE_SIGN_IDENTITY="
-      )
+      sh("xcodebuild", *build_args)
       
       # 复制 app 到输出目录
       app_source = "build/DerivedData/Build/Products/Release/#{APP_NAME}.app"
