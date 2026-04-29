@@ -91,8 +91,10 @@ platform :mac do
       "-derivedDataPath", "build/DerivedData",
       "clean", "build",
       "CODE_SIGN_IDENTITY=",
+      "CODE_SIGN_STYLE=Manual",
       "CODE_SIGNING_REQUIRED=NO",
-      "CODE_SIGNING_ALLOWED=NO"
+      "CODE_SIGNING_ALLOWED=NO",
+      "PROVISIONING_PROFILE_SPECIFIER="
     ]
 
     # 使用 xcodebuild 直接构建
