@@ -6,7 +6,7 @@
 //  Requirements: 7.1, 7.2, 7.3, 7.5
 //
 
-import Foundation
+@preconcurrency import Foundation
 
 // MARK: - SyncEngineProtocol
 
