@@ -101,6 +101,29 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Version: $VERSION"
 
+      - name: Determine build options
+        id: build_options
+        env:
+          CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
+          INPUT_SKIP_SIGNING: ${{ github.event.inputs.skip_signing }}
+          INPUT_SKIP_NOTARIZATION: ${{ github.event.inputs.skip_notarization }}
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "skip_signing=$INPUT_SKIP_SIGNING" >> $GITHUB_OUTPUT
+            echo "skip_notarization=$INPUT_SKIP_NOTARIZATION" >> $GITHUB_OUTPUT
+          else
+            # Tag push: check if signing secrets are available
+            if [ -n "$CERTIFICATE_P12_BASE64" ] && [ -n "$CERTIFICATE_PASSWORD" ]; then
+              echo "skip_signing=false" >> $GITHUB_OUTPUT
+              echo "skip_notarization=false" >> $GITHUB_OUTPUT
+            else
+              echo "⚠️ Signing secrets not configured, building unsigned DMG"
+              echo "skip_signing=true" >> $GITHUB_OUTPUT
+              echo "skip_notarization=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
       - name: Select Xcode version
         run: |
           sudo xcode-select -s /Applications/Xcode_${{ env.XCODE_VERSION }}.app/Contents/Developer
@@ -110,27 +133,27 @@ jobs:
       # Install Fastlane (only for signed builds)
       # ----------------------------------------------------------------------
       - name: Setup Ruby
-        if: github.event.inputs.skip_signing != 'true'
+        if: steps.build_options.outputs.skip_signing != 'true'
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
           bundler-cache: false
 
       - name: Install Fastlane dependencies
-        if: github.event.inputs.skip_signing != 'true'
+        if: steps.build_options.outputs.skip_signing != 'true'
         run: |
           # Remove Gemfile.lock to avoid bundler version conflicts
           rm -f Gemfile.lock
-          
+
           # Install latest bundler
           gem install bundler
-          
+
           # Configure bundle
           bundle config set --local path 'vendor/bundle'
-          
+
           # Install dependencies
           bundle install --jobs 4 --retry 3
-          
+
           # Verify installation
           bundle exec fastlane --version
 
@@ -138,7 +161,7 @@ jobs:
       # Certificate Setup (skip if building unsigned)
       # ----------------------------------------------------------------------
       - name: Install Apple Developer Certificate
-        if: github.event.inputs.skip_signing != 'true'
+        if: steps.build_options.outputs.skip_signing != 'true'
         env:
           CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
           CERTIFICATE_PASSWORD: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
@@ -150,41 +173,41 @@ jobs:
             echo "Or use skip_signing=true to build unsigned DMG"
             exit 1
           fi
-          
+
           # Create temporary keychain
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
           KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
-          
+
           # Create keychain
           security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
           security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          
+
           # Import certificate
           CERTIFICATE_PATH=$RUNNER_TEMP/certificate.p12
           echo -n "$CERTIFICATE_P12_BASE64" | base64 --decode > "$CERTIFICATE_PATH"
-          
+
           # Check if certificate file was created successfully
           if [ ! -f "$CERTIFICATE_PATH" ] || [ ! -s "$CERTIFICATE_PATH" ]; then
             echo "Error: Failed to decode certificate"
             exit 1
           fi
-          
+
           security import "$CERTIFICATE_PATH" \
             -P "$CERTIFICATE_PASSWORD" \
             -A \
             -t cert \
             -f pkcs12 \
             -k "$KEYCHAIN_PATH"
-          
+
           # Set keychain as default
           security list-keychain -d user -s "$KEYCHAIN_PATH"
-          
+
           # Allow codesign to access keychain
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
-          
+
           echo "Certificate installed successfully"
-          
+
           # Verify certificate
           security find-identity -v -p codesigning "$KEYCHAIN_PATH"
 
@@ -192,7 +215,7 @@ jobs:
       # Create .env file for Fastlane (skip if building unsigned)
       # ----------------------------------------------------------------------
       - name: Create Fastlane environment file
-        if: github.event.inputs.skip_signing != 'true'
+        if: steps.build_options.outputs.skip_signing != 'true'
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
@@ -212,11 +235,11 @@ jobs:
       # Build with Fastlane or direct build for unsigned
       # ----------------------------------------------------------------------
       - name: Build and package with Fastlane
-        if: github.event.inputs.skip_signing != 'true'
+        if: steps.build_options.outputs.skip_signing != 'true'
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          
-          if [ "${{ github.event.inputs.skip_notarization }}" = "true" ]; then
+
+          if [ "${{ steps.build_options.outputs.skip_notarization }}" = "true" ]; then
             echo "Building without notarization..."
             bundle exec fastlane release version:$VERSION skip_notarize:true
           else
@@ -225,7 +248,7 @@ jobs:
           fi
 
       - name: Build unsigned DMG
-        if: github.event.inputs.skip_signing == 'true'
+        if: steps.build_options.outputs.skip_signing == 'true'
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           
@@ -285,19 +308,19 @@ jobs:
       - name: Verify build output
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          
+
           # Check in both possible locations
-          if [ "${{ github.event.inputs.skip_signing }}" = "true" ]; then
+          if [ "${{ steps.build_options.outputs.skip_signing }}" = "true" ]; then
             DMG_PATH="build/${{ env.APP_NAME }}-$VERSION.dmg"
           else
             DMG_PATH="LanMount/build/${{ env.APP_NAME }}-$VERSION.dmg"
           fi
-          
+
           if [ ! -f "$DMG_PATH" ]; then
             echo "Error: DMG not found at $DMG_PATH"
             exit 1
           fi
-          
+
           echo "DMG created successfully at $DMG_PATH"
           ls -lh "$DMG_PATH"
 
@@ -308,14 +331,14 @@ jobs:
         id: sha256
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          
+
           # Check in both possible locations
-          if [ "${{ github.event.inputs.skip_signing }}" = "true" ]; then
+          if [ "${{ steps.build_options.outputs.skip_signing }}" = "true" ]; then
             DMG_PATH="build/${{ env.APP_NAME }}-$VERSION.dmg"
           else
             DMG_PATH="LanMount/build/${{ env.APP_NAME }}-$VERSION.dmg"
           fi
-          
+
           SHA256=$(shasum -a 256 "$DMG_PATH" | awk '{print $1}')
           echo "sha256=$SHA256" >> $GITHUB_OUTPUT
           echo "SHA256: $SHA256"
@@ -327,8 +350,8 @@ jobs:
         id: release_notes
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          SKIP_SIGNING="${{ github.event.inputs.skip_signing == 'true' }}"
-          NOTARIZED="${{ github.event.inputs.skip_notarization != 'true' && github.event.inputs.skip_signing != 'true' }}"
+          SKIP_SIGNING="${{ steps.build_options.outputs.skip_signing == 'true' }}"
+          NOTARIZED="${{ steps.build_options.outputs.skip_notarization != 'true' && steps.build_options.outputs.skip_signing != 'true' }}"
           
           # Create release notes
           cat > release_notes.md << EOF
@@ -392,7 +415,7 @@ jobs:
           draft: false
           prerelease: ${{ github.event.inputs.prerelease == 'true' }}
           files: |
-            ${{ github.event.inputs.skip_signing == 'true' && 'build' || 'LanMount/build' }}/${{ env.APP_NAME }}-${{ steps.version.outputs.version }}.dmg
+            ${{ steps.build_options.outputs.skip_signing == 'true' && 'build' || 'LanMount/build' }}/${{ env.APP_NAME }}-${{ steps.version.outputs.version }}.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -404,9 +427,9 @@ jobs:
         run: |
           # Remove .env file
           rm -f .env
-          
+
           # Remove keychain (only if it was created)
-          if [ "${{ github.event.inputs.skip_signing }}" != "true" ]; then
+          if [ "${{ steps.build_options.outputs.skip_signing }}" != "true" ]; then
             KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
             if [ -f "$KEYCHAIN_PATH" ]; then
               security delete-keychain "$KEYCHAIN_PATH" || true
@@ -420,8 +443,8 @@ jobs:
         if: success()
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          SKIP_SIGNING="${{ github.event.inputs.skip_signing == 'true' }}"
-          NOTARIZED="${{ github.event.inputs.skip_notarization != 'true' && github.event.inputs.skip_signing != 'true' }}"
+          SKIP_SIGNING="${{ steps.build_options.outputs.skip_signing == 'true' }}"
+          NOTARIZED="${{ steps.build_options.outputs.skip_notarization != 'true' && steps.build_options.outputs.skip_signing != 'true' }}"
           
           echo "## 🎉 Release Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -432,7 +455,7 @@ jobs:
           echo "| SHA256 | \`${{ steps.sha256.outputs.sha256 }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Code Signed | $( [ "$SKIP_SIGNING" = "true" ] && echo "❌ No" || echo "✅ Yes" ) |" >> $GITHUB_STEP_SUMMARY
           echo "| Notarized | $( [ "$NOTARIZED" = "true" ] && echo "✅ Yes" || echo "❌ No" ) |" >> $GITHUB_STEP_SUMMARY
-          echo "| Pre-release | ${{ github.event.inputs.prerelease == 'true' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Pre-release | ${{ github.event.inputs.prerelease == 'true' || false }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           if [ "$SKIP_SIGNING" = "true" ]; then
