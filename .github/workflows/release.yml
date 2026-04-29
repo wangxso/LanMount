@@ -113,10 +113,10 @@ jobs:
             echo "skip_signing=$INPUT_SKIP_SIGNING" >> $GITHUB_OUTPUT
             echo "skip_notarization=$INPUT_SKIP_NOTARIZATION" >> $GITHUB_OUTPUT
           else
-            # Tag push: check if signing secrets are available
+            # Tag push: sign only, skip notarization
             if [ -n "$CERTIFICATE_P12_BASE64" ] && [ -n "$CERTIFICATE_PASSWORD" ]; then
               echo "skip_signing=false" >> $GITHUB_OUTPUT
-              echo "skip_notarization=false" >> $GITHUB_OUTPUT
+              echo "skip_notarization=true" >> $GITHUB_OUTPUT
             else
               echo "⚠️ Signing secrets not configured, building unsigned DMG"
               echo "skip_signing=true" >> $GITHUB_OUTPUT
