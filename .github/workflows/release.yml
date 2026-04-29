@@ -222,7 +222,6 @@ jobs:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
         run: |
           cat > .env << EOF
-          CODE_SIGN_IDENTITY=Developer ID Application
           APP_NAME=LanMount
           BUNDLE_ID=com.lanmount.app
           EOF

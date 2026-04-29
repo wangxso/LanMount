@@ -97,14 +97,6 @@ platform :mac do
       build_args << "CODE_SIGN_IDENTITY="
       build_args << "CODE_SIGNING_REQUIRED=NO"
       build_args << "CODE_SIGNING_ALLOWED=NO"
-    else
-      # 签名构建：设置签名身份和开发团队
-      if ENV["CODE_SIGN_IDENTITY"] && !ENV["CODE_SIGN_IDENTITY"].empty?
-        build_args << "CODE_SIGN_IDENTITY=#{ENV["CODE_SIGN_IDENTITY"]}"
-      end
-      if ENV["DEVELOPMENT_TEAM"] && !ENV["DEVELOPMENT_TEAM"].empty?
-        build_args << "DEVELOPMENT_TEAM=#{ENV["DEVELOPMENT_TEAM"]}"
-      end
     end
 
     # 使用 xcodebuild 直接构建
