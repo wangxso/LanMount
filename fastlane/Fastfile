@@ -17,18 +17,10 @@ platform :mac do
     unless File.exist?("../.env")
       UI.user_error!("❌ .env 文件不存在！请复制 .env.example 并配置。")
     end
-    
+
     # 加载环境变量
     Dotenv.load("../.env")
-    
-    # 验证必需的环境变量
-    required_vars = ["APPLE_ID", "TEAM_ID", "APP_SPECIFIC_PASSWORD"]
-    missing_vars = required_vars.select { |var| ENV[var].nil? || ENV[var].empty? }
-    
-    unless missing_vars.empty?
-      UI.user_error!("❌ 缺少必需的环境变量: #{missing_vars.join(', ')}")
-    end
-    
+
     UI.success("✅ 环境变量加载完成")
   end
   
@@ -162,7 +154,14 @@ platform :mac do
   desc "公证 DMG 文件"
   lane :notarize_dmg do |options|
     UI.header("🔐 公证 DMG")
-    
+
+    # 验证公证所需的环境变量
+    required_vars = ["APPLE_ID", "TEAM_ID", "APP_SPECIFIC_PASSWORD"]
+    missing_vars = required_vars.select { |var| ENV[var].nil? || ENV[var].empty? }
+    unless missing_vars.empty?
+      UI.user_error!("❌ 公证缺少必需的环境变量: #{missing_vars.join(', ')}")
+    end
+
     dmg_path = options[:dmg_path]
     
     # 转换为绝对路径

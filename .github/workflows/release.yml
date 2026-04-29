@@ -222,13 +222,22 @@ jobs:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
         run: |
           cat > .env << EOF
-          APPLE_ID=$APPLE_ID
-          TEAM_ID=$APPLE_TEAM_ID
-          APP_SPECIFIC_PASSWORD=$APPLE_APP_SPECIFIC_PASSWORD
           CODE_SIGN_IDENTITY=Developer ID Application
           APP_NAME=LanMount
           BUNDLE_ID=com.lanmount.app
           EOF
+
+          # Only add notarization secrets if available
+          if [ -n "$APPLE_ID" ]; then
+            echo "APPLE_ID=$APPLE_ID" >> .env
+          fi
+          if [ -n "$APPLE_TEAM_ID" ]; then
+            echo "TEAM_ID=$APPLE_TEAM_ID" >> .env
+          fi
+          if [ -n "$APPLE_APP_SPECIFIC_PASSWORD" ]; then
+            echo "APP_SPECIFIC_PASSWORD=$APPLE_APP_SPECIFIC_PASSWORD" >> .env
+          fi
+
           echo "Fastlane .env file created"
 
       # ----------------------------------------------------------------------
