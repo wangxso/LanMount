@@ -7,7 +7,7 @@
 //  Requirements: 6.1 - Storage trend chart with 7 days of historical data
 //
 
-import Foundation
+@preconcurrency import Foundation
 import Combine
 
 // MARK: - StorageMonitorProtocol

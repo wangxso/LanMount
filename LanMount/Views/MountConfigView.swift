@@ -366,24 +366,28 @@ struct MountConfigView: View {
     // MARK: - Connection Test Result View
     
     private func connectionTestResultView(_ result: ConnectionTestResult) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: result.success ? "checkmark.circle.fill" : "xmark.circle.fill")
-                .foregroundColor(result.success ? .green : .red)
+        let iconColor: Color = result.success ? .green : .red
+        let iconName = result.success ? "checkmark.circle.fill" : "xmark.circle.fill"
+        let labelPrefix = result.success
+            ? NSLocalizedString("Connection test successful", comment: "Accessibility: Test success")
+            : NSLocalizedString("Connection test failed", comment: "Accessibility: Test failed")
+
+        return HStack(spacing: 8) {
+            Image(systemName: iconName)
+                .foregroundColor(iconColor)
                 .accessibilityHidden(true)
-            
+
             Text(result.message)
                 .font(.callout)
-                .foregroundColor(result.success ? .green : .red)
-            
+                .foregroundColor(iconColor)
+
             Spacer()
         }
         .padding(12)
         .background(result.success ? Color.green.opacity(0.1) : Color.red.opacity(0.1))
         .cornerRadius(8)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(result.success 
-            ? NSLocalizedString("Connection test successful", comment: "Accessibility: Test success") + ": " + result.message
-            : NSLocalizedString("Connection test failed", comment: "Accessibility: Test failed") + ": " + result.message)
+        .accessibilityLabel(labelPrefix + ": " + result.message)
         .accessibilityAddTraits(.isStaticText)
     }
     
