@@ -319,13 +319,7 @@ jobs:
       - name: Verify build output
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-
-          # Check in both possible locations
-          if [ "${{ steps.build_options.outputs.skip_signing }}" = "true" ]; then
-            DMG_PATH="build/${{ env.APP_NAME }}-$VERSION.dmg"
-          else
-            DMG_PATH="LanMount/build/${{ env.APP_NAME }}-$VERSION.dmg"
-          fi
+          DMG_PATH="build/${{ env.APP_NAME }}-$VERSION.dmg"
 
           if [ ! -f "$DMG_PATH" ]; then
             echo "Error: DMG not found at $DMG_PATH"
@@ -342,13 +336,7 @@ jobs:
         id: sha256
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-
-          # Check in both possible locations
-          if [ "${{ steps.build_options.outputs.skip_signing }}" = "true" ]; then
-            DMG_PATH="build/${{ env.APP_NAME }}-$VERSION.dmg"
-          else
-            DMG_PATH="LanMount/build/${{ env.APP_NAME }}-$VERSION.dmg"
-          fi
+          DMG_PATH="build/${{ env.APP_NAME }}-$VERSION.dmg"
 
           SHA256=$(shasum -a 256 "$DMG_PATH" | awk '{print $1}')
           echo "sha256=$SHA256" >> $GITHUB_OUTPUT
@@ -426,7 +414,7 @@ jobs:
           draft: false
           prerelease: ${{ github.event.inputs.prerelease == 'true' }}
           files: |
-            ${{ steps.build_options.outputs.skip_signing == 'true' && 'build' || 'LanMount/build' }}/${{ env.APP_NAME }}-${{ steps.version.outputs.version }}.dmg
+            build/${{ env.APP_NAME }}-${{ steps.version.outputs.version }}.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
