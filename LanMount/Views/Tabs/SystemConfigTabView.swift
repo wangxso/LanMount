@@ -550,13 +550,13 @@ struct SystemConfigTabView: View {
                         
                         HStack(spacing: 16) {
                             Button(NSLocalizedString("GitHub", comment: "GitHub link")) {
-                                openURL("https://github.com/lanmount/lanmount")
+                                openURL("https://github.com/wangxso/LanMount")
                             }
                             .buttonStyle(.link)
                             .font(.caption)
                             
                             Button(NSLocalizedString("Report Issue", comment: "Report issue link")) {
-                                openURL("https://github.com/lanmount/lanmount/issues")
+                                openURL("https://github.com/wangxso/LanMount/issues")
                             }
                             .buttonStyle(.link)
                             .font(.caption)
