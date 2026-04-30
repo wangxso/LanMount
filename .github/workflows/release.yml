@@ -79,7 +79,9 @@ jobs:
   build-and-release:
     name: Build, Sign, Notarize, and Release
     runs-on: macos-14  # macOS Sonoma with Apple Silicon
-    
+    permissions:
+      contents: write
+
     steps:
       # ----------------------------------------------------------------------
       # Setup
