@@ -157,10 +157,10 @@ platform :mac do
       temp_dmg
     )
 
-    # 挂载、复制内容、创建 Applications 链接
+    # 挂载、复制内容
     UI.message("写入 DMG 内容...")
-    mount_output = sh("hdiutil", "attach", temp_dmg)
-    mount_dir = mount_output.match(/Volumes\/(.+)/)[0].strip
+    mount_dir = "/Volumes/#{APP_NAME}"
+    sh("hdiutil", "attach", temp_dmg, "-mountpoint", mount_dir)
     sh("cp", "-R", "#{staging_dir}/.", mount_dir)
     sh("hdiutil", "detach", mount_dir)
 

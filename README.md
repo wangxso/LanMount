@@ -281,7 +281,7 @@ LanMount follows macOS security best practices and requests only the minimum per
 
 ## Troubleshooting
 
-For common issues and solutions, see the [Troubleshooting Guide](TROUBLESHOOTING.md).
+For common issues and solutions, see the [Troubleshooting Guide](docs/TROUBLESHOOTING.md).
 
 Quick fixes for common problems:
 
@@ -292,11 +292,11 @@ Quick fixes for common problems:
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Feel free to open issues or submit pull requests on GitHub.
 
 ## License
 
-LanMount is released under the MIT License. See [LICENSE](LICENSE) for details.
+LanMount is released under the MIT License.
 
 ## Acknowledgments
 
@@ -306,9 +306,9 @@ LanMount is released under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/LanMount/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/LanMount/discussions)
-- **Email**: support@lanmount.app
+- **Issues**: [GitHub Issues](https://github.com/wangxso/LanMount/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/wangxso/LanMount/discussions)
+- **Email**: wangxso@hotmail.com
 
 ---
 
