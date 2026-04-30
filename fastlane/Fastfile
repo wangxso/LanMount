@@ -122,34 +122,56 @@ platform :mac do
   desc "创建 DMG 安装包"
   lane :create_dmg do |options|
     UI.header("📦 创建 DMG")
-    
+
     version = options[:version] || "1.0.0"
     app_path = "../build/Release/#{APP_NAME}.app"
     dmg_path = "../build/#{APP_NAME}-#{version}.dmg"
-    
+    temp_dmg = "../build/temp.dmg"
+    staging_dir = "../build/dmg_staging"
+
     # 验证应用存在
     unless File.exist?(app_path)
       UI.user_error!("❌ 应用不存在: #{app_path}")
     end
-    
-    # 删除旧的 DMG
+
+    # 删除旧的 DMG 和临时文件
     if File.exist?(dmg_path)
       UI.message("删除旧的 DMG...")
       sh("rm", "-f", dmg_path)
     end
-    
-    # 使用 hdiutil 创建 DMG
-    UI.message("创建 DMG...")
+    sh("rm", "-rf", staging_dir)
+
+    # 创建临时目录，包含 App 和 Applications 快捷方式
+    UI.message("准备 DMG 内容...")
+    sh("mkdir", "-p", staging_dir)
+    sh("cp", "-R", app_path, staging_dir)
+    sh("ln", "-s", "/Applications", "#{staging_dir}/Applications")
+
+    # 创建临时 DMG
+    UI.message("创建临时 DMG...")
     sh(
-      "hdiutil",
-      "create",
+      "hdiutil", "create",
+      "-size", "200m",
+      "-fs", "HFS+",
       "-volname", APP_NAME,
-      "-srcfolder", app_path,
-      "-ov",
-      "-format", "UDZO",
-      dmg_path
+      temp_dmg
     )
-    
+
+    # 挂载、复制内容、创建 Applications 链接
+    UI.message("写入 DMG 内容...")
+    mount_output = sh("hdiutil", "attach", temp_dmg)
+    mount_dir = mount_output.match(/Volumes\/(.+)/)[0].strip
+    sh("cp", "-R", "#{staging_dir}/.", mount_dir)
+    sh("hdiutil", "detach", mount_dir)
+
+    # 转换为压缩 DMG
+    UI.message("压缩 DMG...")
+    sh("hdiutil", "convert", temp_dmg, "-format", "UDZO", "-o", dmg_path)
+
+    # 清理临时文件
+    sh("rm", "-f", temp_dmg)
+    sh("rm", "-rf", staging_dir)
+
     UI.success("✅ DMG 创建完成: #{dmg_path}")
     dmg_path
   end
