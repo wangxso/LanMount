@@ -310,11 +310,7 @@ private struct ConditionalHoverModifier: ViewModifier {
     let isEnabled: Bool
     
     func body(content: Content) -> some View {
-        if isEnabled {
-            content.hoverEffect(.automatic)
-        } else {
-            content
-        }
+        content
     }
 }
 

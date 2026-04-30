@@ -842,8 +842,9 @@ extension MountManager {
         }
         
         // Create a task with timeout
+        let capturedCredentials = credentials
         let mountTask = Task {
-            try await mount(config: config, credentials: credentials)
+            try await mount(config: config, credentials: capturedCredentials)
         }
         
         // Create a timeout task

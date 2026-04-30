@@ -93,16 +93,17 @@ final class NetworkScanner: NetworkScannerProtocol {
         
         let stream = AsyncStream<DiscoveredService> { [weak self] continuation in
             self?.streamContinuation = continuation
-            
+
+            let capturedSelf = self
             continuation.onTermination = { @Sendable _ in
-                self?.stopScan()
+                capturedSelf?.stopScan()
             }
         }
-        
+
         _discoveredServices = stream
         return stream
     }
-    
+
     // MARK: - Initialization
     
     /// Creates a new NetworkScanner instance
@@ -578,16 +579,17 @@ final class MockNetworkScanner: NetworkScannerProtocol {
         
         let stream = AsyncStream<DiscoveredService> { [weak self] continuation in
             self?.streamContinuation = continuation
-            
+
+            let capturedSelf = self
             continuation.onTermination = { @Sendable _ in
-                self?.stopScan()
+                capturedSelf?.stopScan()
             }
         }
-        
+
         _discoveredServices = stream
         return stream
     }
-    
+
     // MARK: - NetworkScannerProtocol Implementation
     
     func startScan() async {
