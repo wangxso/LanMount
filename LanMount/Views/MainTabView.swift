@@ -68,6 +68,18 @@ struct MainTabView: View {
             dashboardViewModel.startMonitoring()
             updateBadges()
         }
+        .onAppear {
+            // Check if there's a pending tab to switch to (e.g., from Preferences menu)
+            if let pendingTab = AppDelegate.pendingTab {
+                navigationController.switchTo(pendingTab)
+                AppDelegate.pendingTab = nil
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .dashboardSwitchToTab)) { notification in
+            if let tab = notification.object as? AppTab {
+                navigationController.switchTo(tab)
+            }
+        }
         .onChange(of: dashboardViewModel.mountedVolumeCount) { _ in
             // Update badges when mounted volume count changes
             // Requirements: 8.3 - Overview tab badge for mounted disk count
@@ -197,6 +209,17 @@ struct MainTabViewLegacy: View {
             await dashboardViewModel.loadInitialData()
             dashboardViewModel.startMonitoring()
             updateBadges()
+        }
+        .onAppear {
+            if let pendingTab = AppDelegate.pendingTab {
+                navigationController.switchTo(pendingTab)
+                AppDelegate.pendingTab = nil
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .dashboardSwitchToTab)) { notification in
+            if let tab = notification.object as? AppTab {
+                navigationController.switchTo(tab)
+            }
         }
         .onChange(of: dashboardViewModel.mountedVolumeCount) { _ in
             updateBadges()

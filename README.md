@@ -68,45 +68,40 @@ Whether you're connecting to a NAS device, a Windows file server, or another Mac
 
 ## Screenshots
 
-### Dashboard - 主界面
+### Overview - 概览
 <p align="center">
-  <img src="imgs/screenshots/dashboard.png" alt="Dashboard" width="100%">
+  <img src="docs/images/mainmenu.png" alt="Overview" width="100%">
 </p>
 
-主界面提供一目了然的连接状态和快速操作面板。
-
-### Disk Info - 磁盘信息
-<p align="center">
-  <img src="imgs/screenshots/diskinfo.png" alt="Disk Info" width="100%">
-</p>
-
-实时监控存储使用情况，包括容量、使用率和趋势图表。
+一目了然的连接状态总览，显示所有已挂载磁盘和快速操作面板。
 
 ### Disk Configuration - 磁盘配置
 <p align="center">
-  <img src="imgs/screenshots/diskconfig.png" alt="Disk Configuration" width="100%">
+  <img src="docs/images/diskconfig.png" alt="Disk Configuration" width="100%">
 </p>
 
 管理所有 SMB 连接配置，支持自动挂载和自定义设置。
 
+### Disk Info - 磁盘信息
+<p align="center">
+  <img src="docs/images/diskinfo.png" alt="Disk Info" width="100%">
+</p>
+
+实时监控存储使用情况，包括容量、使用率和 I/O 监控图表。
+
 ### System Configuration - 系统配置
 <p align="center">
-  <img src="imgs/screenshots/config.png" alt="System Configuration" width="100%">
+  <img src="docs/images/config.png" alt="System Configuration" width="100%">
 </p>
 
-自定义应用设置，包括语言、启动选项和通知偏好。
+自定义应用设置，包括语言、启动选项、通知偏好和数据管理。
 
-<details>
-<summary>更多截图</summary>
-
-### Add Disk - 添加磁盘
+### Menu Bar - 菜单栏
 <p align="center">
-  <img src="imgs/screenshots/adddisk.png" alt="Add Disk" width="100%">
+  <img src="docs/images/topbar.png" alt="Menu Bar" width="60%">
 </p>
 
-简单易用的配置向导，快速添加新的 SMB 连接。
-
-</details>
+菜单栏图标实时显示挂载状态，点击可快速访问所有功能。
 
 ## System Requirements
 
@@ -151,7 +146,9 @@ On first launch, macOS may show a security warning because the app is downloaded
 
 After installation, launch LanMount. You'll see a new icon in your menu bar:
 
-![Menu Bar Icon](docs/images/menubar-icon.png)
+<p align="center">
+  <img src="docs/images/topbar.png" alt="Menu Bar" width="60%">
+</p>
 
 ### 2. Scan for Network Shares
 
@@ -239,9 +236,9 @@ The menu bar icon indicates the current status:
 
 | Icon | Status |
 |------|--------|
-| ![Normal](docs/images/icon-normal.png) | All shares connected |
-| ![Connecting](docs/images/icon-connecting.png) | Connecting to a share |
-| ![Warning](docs/images/icon-warning.png) | One or more shares disconnected |
+| `externaldrive.connected.to.line.below` | All shares connected |
+| `externaldrive.badge.timemachine` | Connecting to a share |
+| `externaldrive.badge.xmark` | One or more shares disconnected |
 
 ## SMB URL Format
 

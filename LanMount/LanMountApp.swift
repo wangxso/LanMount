@@ -19,18 +19,18 @@ import AppKit
 struct LanMountApp: App {
     // Use AppDelegate for menu bar functionality and lifecycle management
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    
+
     // AppCoordinator as StateObject for SwiftUI state management
     @StateObject private var appCoordinator = AppCoordinator()
-    
+
     var body: some Scene {
-        // Settings window for preferences - accessible via menu bar or Cmd+,
+        // Settings are accessible via the SystemConfigTabView in the dashboard.
+        // No separate Settings scene to avoid an independent window.
         Settings {
-            PreferencesView()
-                .environmentObject(appCoordinator)
+            EmptyView()
         }
     }
-    
+
     init() {
         // Configure app to run in background (no dock icon)
         // This is handled by LSUIElement = YES in Info.plist
@@ -42,18 +42,21 @@ struct LanMountApp: App {
 /// Requirements: 2.2, 2.3, 2.5
 @MainActor
 class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
-    
+
     /// The main application coordinator
     /// Manages all services and coordinates event flow
     @Published var appCoordinator: AppCoordinator?
-    
+
     /// Logger for application logging
     private let logger = Logger.shared
-    
+
     /// Window controllers for managing windows
     private var mountConfigWindowController: NSWindowController?
     private var networkScannerWindowController: NSWindowController?
     private var dashboardWindowController: NSWindowController?
+
+    /// Pending tab to switch to when dashboard opens (set by Preferences menu)
+    static var pendingTab: AppTab?
     
     // MARK: - NSApplicationDelegate
     
@@ -119,6 +122,22 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             self,
             selector: #selector(showDashboardWindow),
             name: .showDashboardWindow,
+            object: nil
+        )
+
+        // Observer for status bar icon click (toggle dashboard)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(statusBarIconClicked),
+            name: .statusBarIconClicked,
+            object: nil
+        )
+
+        // Observer for switching to a specific tab
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleSwitchToTab(_:)),
+            name: .switchToTab,
             object: nil
         )
     }
@@ -202,6 +221,42 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
             // Open the window using SwiftUI's openWindow
             openDashboardWindow()
         }
+    }
+
+    /// Toggles the dashboard window when the status bar icon is clicked
+    @objc private func statusBarIconClicked() {
+        logger.info("Status bar icon clicked", component: Logger.Component.app)
+
+        if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == "dashboard" }) {
+            if window.isVisible {
+                window.orderOut(nil)
+            } else {
+                window.makeKeyAndOrderFront(nil)
+                NSApp.activate(ignoringOtherApps: true)
+            }
+        } else {
+            openDashboardWindow()
+        }
+    }
+
+    /// Handles switching to a specific tab in the dashboard
+    @objc private func handleSwitchToTab(_ notification: Notification) {
+        guard let tab = notification.object as? AppTab else { return }
+        logger.info("Switching to tab: \(tab.title)", component: Logger.Component.app)
+
+        // Store the pending tab for MainTabView to pick up
+        AppDelegate.pendingTab = tab
+
+        // Ensure dashboard is visible
+        if let window = NSApp.windows.first(where: { $0.identifier?.rawValue == "dashboard" }) {
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+        } else {
+            openDashboardWindow()
+        }
+
+        // Notify MainTabView to switch tabs
+        NotificationCenter.default.post(name: .dashboardSwitchToTab, object: tab)
     }
     
     /// Opens the mount configuration window using SwiftUI

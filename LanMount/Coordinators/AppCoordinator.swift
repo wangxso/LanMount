@@ -853,8 +853,9 @@ extension AppCoordinator: MenuBarMenuDelegate {
     func menuBarDidSelectPreferences() {
         logger.info("User selected Preferences", component: Logger.Component.menuBar)
 
-        // Open the preferences window
-        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        // Open the dashboard and switch to system config tab
+        NotificationCenter.default.post(name: .showDashboardWindow, object: nil)
+        NotificationCenter.default.post(name: .switchToTab, object: AppTab.systemConfig)
     }
 
     func menuBarDidSelectQuit() {
@@ -899,6 +900,15 @@ extension Notification.Name {
 
     /// Posted when the dashboard window should be shown
     static let showDashboardWindow = Notification.Name("showDashboardWindow")
+
+    /// Posted when the status bar icon is clicked
+    static let statusBarIconClicked = Notification.Name("statusBarIconClicked")
+
+    /// Posted to request switching to a specific tab (observed by AppDelegate)
+    static let switchToTab = Notification.Name("switchToTab")
+
+    /// Posted by AppDelegate after the dashboard is ready to switch tabs (observed by MainTabView)
+    static let dashboardSwitchToTab = Notification.Name("dashboardSwitchToTab")
 }
 
 // MARK: - NotificationManagerDelegate

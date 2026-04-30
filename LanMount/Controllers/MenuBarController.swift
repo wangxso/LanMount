@@ -150,17 +150,23 @@ final class MenuBarController: NSObject, MenuBarControllerProtocol, ObservableOb
         guard statusItem == nil else {
             return
         }
-        
+
         // Create status item with variable length
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        
+
         // Configure the button
         if let button = statusItem?.button {
             updateButtonIcon(button, for: iconState)
             button.target = self
+            button.action = #selector(statusBarButtonClicked(_:))
         }
     }
-    
+
+    /// Called when the status bar icon is clicked
+    @objc private func statusBarButtonClicked(_ sender: NSStatusBarButton) {
+        NotificationCenter.default.post(name: .statusBarIconClicked, object: nil)
+    }
+
     /// Updates the icon state
     /// - Parameter state: The new icon state
     func setIconState(_ state: MenuBarIconState) {
